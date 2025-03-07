@@ -15,6 +15,8 @@ public class CarData : MonoBehaviour
 
     private Queue<string> dataQueue = new Queue<string>();
     private readonly object queueLock = new object();
+    private float lastRequestTime = 0f;
+    private float requestInterval = 2.0f; // Wait 2 seconds between requests
 
     void Start()
     {
@@ -88,24 +90,18 @@ public class CarData : MonoBehaviour
         }
     }
 
+
+
     void Update()
     {
-        lock (queueLock)
+        if (Time.time - lastRequestTime > requestInterval)
         {
-            while (dataQueue.Count > 0)
-            {
-                string data = dataQueue.Dequeue();
-                ProcessOBDData(data);
-            }
-        }
-
-        // Example: Continuously request RPM and Speed in Unity
-        if (Time.frameCount % 60 == 0) // Request every second
-        {
-            SendCommand("01 0C"); // Request RPM
-            SendCommand("01 0D"); // Request Speed
+            SendCommand("010C"); // Request RPM
+            SendCommand("010D"); // Request Speed
+            lastRequestTime = Time.time; // Update timestamp
         }
     }
+
 
     private void ProcessOBDData(string response)
     {
