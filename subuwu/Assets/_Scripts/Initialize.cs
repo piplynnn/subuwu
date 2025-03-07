@@ -244,14 +244,16 @@ public class Initialize : MonoBehaviour
     } 
     void ReadOBDData()
     {
-        Debug.Log("OBD-II Thread Started!"); // ✅ Confirm thread is running
+        Debug.Log("OBD-II Thread Started!"); // ✅ Confirm thread starts
+
         while (isRunning && serialPort.IsOpen)
         {
             try
             {
                 serialPort.WriteLine("01 0C\r"); // Request RPM
                 string response = serialPort.ReadLine().Trim(); // Remove extra spaces/newlines
-                Debug.Log("Raw OBD Response: " + response); // ✅ Log raw response
+                Debug.Log("Raw OBD Response: [" + response + "]"); // ✅ Debugging raw response
+
                 latestRPM = ParseRPM(response);
             }
             catch (System.TimeoutException)
@@ -265,6 +267,7 @@ public class Initialize : MonoBehaviour
             Thread.Sleep(100);
         }
     }
+
 
 string ParseRPM(string rawResponse)
 {
