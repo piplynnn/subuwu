@@ -67,7 +67,7 @@ public class CarData : MonoBehaviour
         if (serialPort != null && serialPort.IsOpen)
         {
             serialPort.Write(command + "\r"); // Ensure proper termination
-            Debug.Log("📤 Sent: " + command);
+            //Debug.Log("📤 Sent: " + command);
             Thread.Sleep(10); // Allow ECU time to process request
         }
     }
