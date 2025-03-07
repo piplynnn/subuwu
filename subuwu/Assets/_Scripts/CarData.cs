@@ -15,8 +15,6 @@ public class CarData : MonoBehaviour
 
     private Queue<string> dataQueue = new Queue<string>();
     private readonly object queueLock = new object();
-    private float lastRequestTime = 0f;
-    private float requestInterval = 2.0f; // Wait 2 seconds between requests
 
     void Start()
     {
@@ -25,7 +23,7 @@ public class CarData : MonoBehaviour
             // Initialize Serial Port
             serialPort = new SerialPort(portName, baudRate)
             {
-                ReadTimeout = 3000, // Increased timeout to handle slow responses
+                ReadTimeout = 5000, // Increased timeout for stability
                 WriteTimeout = 1000,
                 DtrEnable = true, // Enable if adapter needs it
                 RtsEnable = true, // Some adapters may require this
@@ -57,6 +55,8 @@ public class CarData : MonoBehaviour
         Thread.Sleep(500);
         SendCommand("ATSP0"); // Auto-detect OBD-II protocol
         Thread.Sleep(500);
+        SendCommand("ATST 64"); // Increase Timeout (Prevents "SEARCHING..." from cutting off)
+        Thread.Sleep(500);
         Debug.Log("✅ OBD-II Adapter Initialized.");
     }
 
@@ -66,6 +66,7 @@ public class CarData : MonoBehaviour
         {
             serialPort.Write(command + "\r"); // Ensure proper termination
             Debug.Log("📤 Sent: " + command);
+            Thread.Sleep(200); // Allow ECU time to process request
         }
     }
 
@@ -90,21 +91,34 @@ public class CarData : MonoBehaviour
         }
     }
 
-
-
     void Update()
     {
-        if (Time.time - lastRequestTime > requestInterval)
+        lock (queueLock)
+        {
+            while (dataQueue.Count > 0)
+            {
+                string data = dataQueue.Dequeue();
+                ProcessOBDData(data);
+            }
+        }
+
+        // Example: Continuously request RPM and Speed in Unity
+        if (Time.frameCount % 180 == 0) // Request every 3 seconds
         {
             SendCommand("010C"); // Request RPM
             SendCommand("010D"); // Request Speed
-            lastRequestTime = Time.time; // Update timestamp
         }
     }
 
-
     private void ProcessOBDData(string response)
     {
+        // Ignore "SEARCHING..." responses
+        if (string.IsNullOrWhiteSpace(response) || response.Contains("SEARCHING") || response.Contains("?"))
+        {
+            Debug.LogWarning("⚠ Ignored invalid response: " + response);
+            return;
+        }
+
         Debug.Log("📥 Raw Response: " + response);
 
         string[] bytes = response.Split(' ');
@@ -123,6 +137,10 @@ public class CarData : MonoBehaviour
                 int speed = Convert.ToInt32(bytes[2], 16);
                 Debug.Log("🏎 Speed: " + speed + " km/h");
             }
+        }
+        else
+        {
+            Debug.LogWarning("⚠ Invalid OBD-II response format: " + response);
         }
     }
 
