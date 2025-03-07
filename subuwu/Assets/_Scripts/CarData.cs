@@ -107,13 +107,13 @@ public class CarData : MonoBehaviour
         // Example: Continuously request RPM and Speed in Unity
         if (Time.frameCount % 600 == 0 && !timecheck) // Request every 3 seconds
         {
-            SendCommand("010C"); // Request RPM
+            //SendCommand("010C"); // Request RPM
             SendCommand("010D"); // Request Speed
         }
 
         if (Time.frameCount % 5 == 0 && timecheck)
         {
-            SendCommand("010C");
+            //SendCommand("010C");
             SendCommand("010D");
         }
     }
@@ -145,6 +145,7 @@ public class CarData : MonoBehaviour
             {
                 int speed = Convert.ToInt32(bytes[2], 16);
                 Debug.Log("🏎 Speed: " + speed + " km/h");
+                timecheck = true;
             }
         }
         else
