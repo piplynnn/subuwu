@@ -120,9 +120,9 @@ public class CarData : MonoBehaviour
     private void ProcessOBDData(string response)
     {
         // Ignore "SEARCHING..." responses
-        if (string.IsNullOrWhiteSpace(response) || response.Contains("SEARCHING") || response.Contains("?"))
+        if (response.Contains("SEARCHING") || response.Contains("?"))
         {
-            Debug.LogWarning("⚠ Ignored invalid response: " + response);
+            Debug.LogWarning(response);
             return;
         }
 
