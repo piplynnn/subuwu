@@ -264,8 +264,6 @@ public class Initialize : MonoBehaviour
                     Thread.Sleep(100);
                 }
             }
-
-    }
 string ParseRPM(string rawResponse)
 {
     if (string.IsNullOrEmpty(rawResponse))
@@ -291,5 +289,4 @@ string ParseRPM(string rawResponse)
         if (obdThread != null) obdThread.Join();
         if (serialPort.IsOpen) serialPort.Close();
     }
-}
 }
