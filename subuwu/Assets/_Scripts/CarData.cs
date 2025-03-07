@@ -3,7 +3,7 @@ using UnityEngine;
 using System.IO.Ports;
 using System.Threading;
 
-public class Initialize : MonoBehaviour
+public class CarData : MonoBehaviour
 {
     private SerialPort serialPort;
     private Thread obdThread;
@@ -77,15 +77,21 @@ public class Initialize : MonoBehaviour
                     serialPort.WriteLine("01 0C\r"); // ✅ Request RPM
                     Thread.Sleep(500); // ✅ Wait for ECU response
 
-                    // ✅ Read all available data in buffer (handles slow responses)
-                    byte[] buffer = new byte[serialPort.BytesToRead];
-                    serialPort.Read(buffer, 0, buffer.Length);
-                    string response = System.Text.Encoding.ASCII.GetString(buffer).Trim();
-
-                    lock (dataLock) // ✅ Ensure thread safety
+                    // ✅ Check if there is data before reading
+                    if (serialPort.BytesToRead > 0)
                     {
-                        obdRawResponse = response;
-                        latestRPM = ParseRPM(response);
+                        string response = serialPort.ReadExisting().Trim(); // ✅ Read all available data
+                        Debug.Log("Raw OBD Response: " + response);
+
+                        lock (dataLock) // ✅ Ensure thread safety
+                        {
+                            obdRawResponse = response;
+                            latestRPM = ParseRPM(response);
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogWarning("No data available to read from OBD-II.");
                     }
                 }
                 catch (System.TimeoutException)
@@ -97,6 +103,12 @@ public class Initialize : MonoBehaviour
                     Debug.LogError("Serial Read Error: " + e.Message);
                 }
             }
+            else
+            {
+                Debug.LogError("Serial Port Closed Unexpectedly!");
+                break;
+            }
+
             Thread.Sleep(100); // ✅ Prevents excessive CPU usage
         }
     }
@@ -112,7 +124,7 @@ public class Initialize : MonoBehaviour
         {
             int rpm = (int.Parse(parts[2], System.Globalization.NumberStyles.HexNumber) * 256) +
                       int.Parse(parts[3], System.Globalization.NumberStyles.HexNumber);
-            
+
             if (rpm == 0)
             {
                 Debug.LogWarning("ECU is reporting 0 RPM. Is the engine running?");
@@ -130,12 +142,13 @@ public class Initialize : MonoBehaviour
 
         if (obdThread != null && obdThread.IsAlive)
         {
-            obdThread.Abort(); // ✅ Force close thread to prevent crashes
+            obdThread.Abort(); // ✅ Wait for the thread to finish instead of force-closing it
         }
 
         if (serialPort.IsOpen)
         {
             serialPort.Close();
+            Debug.Log("Serial Port Closed.");
         }
     }
 }
