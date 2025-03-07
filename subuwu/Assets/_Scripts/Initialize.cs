@@ -59,10 +59,13 @@ public class Initialize : MonoBehaviour
     {
         try
         {
-            serialPort.Open();
-            Debug.Log("Serial Port Opened!");
-            serialPort.WriteLine("ATI\r"); // Send test command
-            
+            if (!serialPort.IsOpen) 
+            {
+                serialPort.Open();
+                Debug.Log("Serial Port Opened!");
+                serialPort.WriteLine("ATI\r"); // Send test command
+            }
+
             obdThread = new Thread(ReadOBDData);
             obdThread.Start();
         }
@@ -238,37 +241,55 @@ public class Initialize : MonoBehaviour
     public IEnumerator FadeOut()
     {
         yield return stisprite.DOColor(new Color(stisprite.color.r, stisprite.color.g, stisprite.color.b, 0f), fadeDuration).WaitForCompletion();
-    }
+    } 
     void ReadOBDData()
-    {
-        while (serialPort.IsOpen)
-        {
-            try
             {
-                serialPort.WriteLine("01 0C\r"); // Request RPM
-                string response = serialPort.ReadLine();
-                latestRPM = ParseRPM(response);
-                Thread.Sleep(25); // Adjust polling rate
+                while (isRunning && serialPort.IsOpen)
+                {
+                    try
+                    {
+                        serialPort.WriteLine("01 0C\r"); // Request RPM
+                        string response = serialPort.ReadLine().Trim(); // Remove extra spaces/newlines
+                        Debug.Log("Raw OBD Response: " + response); // ✅ Log raw response
+                        latestRPM = ParseRPM(response);
+                    }
+                    catch (System.TimeoutException)
+                    {
+                        latestRPM = "No Data";
+                    }
+                    catch (System.Exception e)
+                    {
+                        Debug.LogError("Serial Read Error: " + e.Message);
+                    }
+                    Thread.Sleep(100);
+                }
             }
-            catch (System.TimeoutException)
-            {
-                latestRPM = "No Data";
-                
-            }
-            
-        }
+
     }
-    string ParseRPM(string rawResponse)
+string ParseRPM(string rawResponse)
+{
+    if (string.IsNullOrEmpty(rawResponse))
     {
-        if (rawResponse.Length >= 4)
-        {
-            string hexRPM = rawResponse.Substring(4, 4); // Extract "0B A8"
-            int rpm = (int.Parse(hexRPM.Substring(0, 2), System.Globalization.NumberStyles.HexNumber) * 256) +
-                      int.Parse(hexRPM.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
-            
-            return (rpm / 4).ToString(); // Apply division
-            
-        }
         return "Invalid Data";
     }
+
+    // ✅ Extract the last two hex values (XX YY)
+    string[] parts = rawResponse.Split(' ');
+    if (parts.Length >= 4 && parts[0] == "41" && parts[1] == "0C") // Ensure correct response
+    {
+        int rpm = (int.Parse(parts[2], System.Globalization.NumberStyles.HexNumber) * 256) +
+                  int.Parse(parts[3], System.Globalization.NumberStyles.HexNumber);
+        return (rpm / 4).ToString(); // Divide by 4 for actual RPM
+    }
+
+    return "Invalid Data"; // If the format is incorrect
+}
+
+    void OnDestroy()
+    {
+        isRunning = false;
+        if (obdThread != null) obdThread.Join();
+        if (serialPort.IsOpen) serialPort.Close();
+    }
+}
 }
