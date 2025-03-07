@@ -1,79 +1,148 @@
 using System;
 using System.IO.Ports;
+using System.Threading;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class CarData : MonoBehaviour
 {
     private SerialPort serialPort;
-    public string portName = "COM3"; // Change this to match your OBD-II adapter
-    public int baudRate = 115200; // Common baud rate for OBD-II adapters
+    private Thread serialThread;
+    private bool keepReading = true;
+    
+    public string portName = "COM3"; // Change this based on your OBD-II adapter
+    public int baudRate = 115200; // Try 9600, 38400, or 115200 if needed
+
+    private Queue<string> dataQueue = new Queue<string>();
+    private readonly object queueLock = new object();
 
     void Start()
     {
         try
         {
-            serialPort = new SerialPort(portName, baudRate);
-            serialPort.ReadTimeout = 1000;
-            serialPort.WriteTimeout = 1000;
+            // Initialize Serial Port
+            serialPort = new SerialPort(portName, baudRate)
+            {
+                ReadTimeout = 3000, // Increased timeout to handle slow responses
+                WriteTimeout = 1000,
+                DtrEnable = true, // Enable if adapter needs it
+                RtsEnable = true, // Some adapters may require this
+                NewLine = "\r" // Required for ELM327 commands
+            };
+
             serialPort.Open();
-            Debug.Log("Connected to OBD-II on " + portName);
+            Debug.Log("✅ Connected to OBD-II on " + portName);
+
+            // Run OBD-II initialization
+            InitializeOBD();
+
+            // Start the background thread for reading data
+            serialThread = new Thread(ReadSerial);
+            serialThread.IsBackground = true;
+            serialThread.Start();
         }
         catch (Exception e)
         {
-            Debug.LogError("Failed to connect to OBD-II: " + e.Message);
+            Debug.LogError("❌ Failed to connect to OBD-II: " + e.Message);
+        }
+    }
+
+    private void InitializeOBD()
+    {
+        SendCommand("ATZ");   // Reset ELM327
+        Thread.Sleep(1000);   // Wait for reset
+        SendCommand("ATE0");  // Turn off echo (prevents duplicate input)
+        Thread.Sleep(500);
+        SendCommand("ATSP0"); // Auto-detect OBD-II protocol
+        Thread.Sleep(500);
+        Debug.Log("✅ OBD-II Adapter Initialized.");
+    }
+
+    private void SendCommand(string command)
+    {
+        if (serialPort != null && serialPort.IsOpen)
+        {
+            serialPort.Write(command + "\r"); // Ensure proper termination
+            Debug.Log("📤 Sent: " + command);
+        }
+    }
+
+    private void ReadSerial()
+    {
+        while (keepReading && serialPort != null && serialPort.IsOpen)
+        {
+            try
+            {
+                string response = serialPort.ReadLine().Trim();
+                response = response.Replace(">", "").Trim(); // Remove prompt if present
+
+                lock (queueLock)
+                {
+                    dataQueue.Enqueue(response);
+                }
+            }
+            catch (TimeoutException)
+            {
+                Debug.LogWarning("⚠ OBD-II response timeout. No data received.");
+            }
         }
     }
 
     void Update()
     {
-        if (serialPort != null && serialPort.IsOpen)
+        lock (queueLock)
         {
-            try
+            while (dataQueue.Count > 0)
             {
-                string rpmData = RequestRPM();
-                if (!string.IsNullOrEmpty(rpmData))
-                {
-                    int rpm = ParseRPM(rpmData);
-                    Debug.Log("RPM: " + rpm);
-                }
+                string data = dataQueue.Dequeue();
+                ProcessOBDData(data);
             }
-            catch (Exception e)
-            {
-                Debug.LogError("Error reading from OBD-II: " + e.Message);
-            }
+        }
+
+        // Example: Continuously request RPM and Speed in Unity
+        if (Time.frameCount % 60 == 0) // Request every second
+        {
+            SendCommand("010C"); // Request RPM
+            SendCommand("010D"); // Request Speed
         }
     }
 
-
-    private string RequestRPM()
+    private void ProcessOBDData(string response)
     {
-        serialPort.Write("010C"); // OBD-II request for RPM
-        System.Threading.Thread.Sleep(100); // Small delay for response
-        return serialPort.ReadLine();
-    }
+        Debug.Log("📥 Raw Response: " + response);
 
-    private int ParseRPM(string response)
-    {
-        // OBD-II responses typically look like: "41 0C 1A F8"
         string[] bytes = response.Split(' ');
 
-        if (bytes.Length >= 4 && bytes[0] == "41" && bytes[1] == "0C")
+        if (bytes.Length >= 4)
         {
-            int A = Convert.ToInt32(bytes[2], 16);
-            int B = Convert.ToInt32(bytes[3], 16);
-            return ((A * 256) + B) / 4; // OBD-II RPM formula
+            if (bytes[0] == "41" && bytes[1] == "0C") // RPM
+            {
+                int A = Convert.ToInt32(bytes[2], 16);
+                int B = Convert.ToInt32(bytes[3], 16);
+                int rpm = ((A * 256) + B) / 4;
+                Debug.Log("🔥 Engine RPM: " + rpm);
+            }
+            else if (bytes[0] == "41" && bytes[1] == "0D") // Speed
+            {
+                int speed = Convert.ToInt32(bytes[2], 16);
+                Debug.Log("🏎 Speed: " + speed + " km/h");
+            }
         }
-
-        Debug.LogWarning("Invalid RPM response: " + response);
-        return 0;
     }
 
     void OnApplicationQuit()
     {
+        keepReading = false;
+
+        if (serialThread != null && serialThread.IsAlive)
+        {
+            serialThread.Join(); // Ensure thread ends cleanly
+        }
+
         if (serialPort != null && serialPort.IsOpen)
         {
             serialPort.Close();
-            Debug.Log("Disconnected from OBD-II.");
+            Debug.Log("🔌 Disconnected from OBD-II.");
         }
     }
 }
