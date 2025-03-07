@@ -23,24 +23,40 @@ public class CarData : MonoBehaviour
             if (!serialPort.IsOpen)
             {
                 serialPort.Open();
-                Debug.Log("Serial Port Opened!");
+                Debug.Log("✅ Serial Port Opened!");
 
                 // ✅ Reset OBD-II Adapter
                 serialPort.WriteLine("ATZ\r");
-                Thread.Sleep(500);
+                Thread.Sleep(1000); // Give the adapter time to reset
 
-                // ✅ Auto-detect OBD-II protocol
+                // ✅ Set Protocol (Autodetect)
                 serialPort.WriteLine("ATSP0\r");
-                Thread.Sleep(200);
+                Thread.Sleep(500);
 
                 // ✅ Enable Adaptive Timing (Faster ECU Responses)
                 serialPort.WriteLine("ATAT1\r");
-                Thread.Sleep(200);
+                Thread.Sleep(500);
 
                 // ✅ Turn off Headers (Removes extra text from responses)
                 serialPort.WriteLine("ATH0\r");
-                Thread.Sleep(200);
+                Thread.Sleep(500);
+
+                Debug.Log("✅ OBD-II Adapter Initialized!");
             }
+
+            if (obdThread == null || !obdThread.IsAlive)
+            {
+                obdThread = new Thread(ReadOBDData);
+                obdThread.IsBackground = true; // ✅ Allows Unity to close without issues
+                obdThread.Start();
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError("❌ Error opening serial port: " + e.Message);
+        }
+    }
+
 
             if (obdThread == null || !obdThread.IsAlive)
             {
