@@ -102,8 +102,8 @@ public class CarData : MonoBehaviour
         // Example: Continuously request RPM and Speed in Unity
         if (Time.frameCount % 60 == 0) // Request every second
         {
-            SendCommand("010C"); // Request RPM
-            SendCommand("010D"); // Request Speed
+            SendCommand("01 0C"); // Request RPM
+            SendCommand("01 0D"); // Request Speed
         }
     }
 
