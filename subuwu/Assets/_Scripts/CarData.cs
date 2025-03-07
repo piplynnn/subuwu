@@ -103,7 +103,7 @@ public class CarData : MonoBehaviour
         }
 
         // Example: Continuously request RPM and Speed in Unity
-        if (Time.frameCount % 600 == 0) // Request every 3 seconds
+        if (Time.frameCount % 60 == 0) // Request every 3 seconds
         {
             SendCommand("010C"); // Request RPM
             //SendCommand("010D"); // Request Speed
@@ -113,10 +113,14 @@ public class CarData : MonoBehaviour
     private void ProcessOBDData(string response)
     {
         // Ignore "SEARCHING..." responses
-        if (string.IsNullOrWhiteSpace(response) || response.Contains("SEARCHING") || response.Contains("?"))
+        if  (response.Contains("SEARCHING"))
         {
-            Debug.LogWarning("⚠ Ignored invalid response: " + response);
-            return;
+            if (Time.frameCount % 600 == 0)
+            {
+                Debug.LogWarning("Response was " + response);
+                return;
+            }
+           
         }
 
         Debug.Log("📥 Raw Response: " + response);
