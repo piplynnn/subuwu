@@ -88,7 +88,7 @@ public class CarData : MonoBehaviour
             }
             catch (TimeoutException)
             {
-                Debug.LogWarning("⚠ OBD-II response timeout. No data received.");
+                //Debug.LogWarning("⚠ OBD-II response timeout. No data received.");
             }
         }
     }
@@ -126,7 +126,7 @@ public class CarData : MonoBehaviour
             return;
         }
 
-        Debug.Log("📥 Raw Response: " + response);
+        //Debug.Log("📥 Raw Response: " + response);
 
         string[] bytes = response.Split(' ');
 
@@ -148,7 +148,7 @@ public class CarData : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("⚠ Invalid OBD-II response format: " + response);
+            //Debug.LogWarning("⚠ Invalid OBD-II response format: " + response);
         }
     }
 
