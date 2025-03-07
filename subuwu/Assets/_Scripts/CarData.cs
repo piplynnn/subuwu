@@ -108,12 +108,13 @@ public class CarData : MonoBehaviour
         if (Time.frameCount % 600 == 0 && !timecheck) // Request every 3 seconds
         {
             SendCommand("010C"); // Request RPM
-            //SendCommand("010D"); // Request Speed
+            SendCommand("010D"); // Request Speed
         }
 
-        if (Time.frameCount % 1 == 0 && timecheck)
+        if (Time.frameCount % 5 == 0 && timecheck)
         {
             SendCommand("010C");
+            SendCommand("010D");
         }
     }
 
