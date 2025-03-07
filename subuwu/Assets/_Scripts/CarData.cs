@@ -55,20 +55,8 @@ public class CarData : MonoBehaviour
         {
             Debug.LogError("❌ Error opening serial port: " + e.Message);
         }
-    }
-
-
-            if (obdThread == null || !obdThread.IsAlive)
-            {
-                obdThread = new Thread(ReadOBDData);
-                obdThread.IsBackground = true; // ✅ Allows Unity to close without issues
-                obdThread.Start();
-            }
-        }
-        catch (System.Exception e)
-        {
-            Debug.LogError("Error opening serial port: " + e.Message);
-        }
+    
+        
     }
 
     void Update()
