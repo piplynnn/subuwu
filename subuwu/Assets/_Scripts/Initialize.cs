@@ -59,24 +59,24 @@ public class Initialize : MonoBehaviour
     {
         try
         {
-            if (!serialPort.IsOpen) 
+            if (!serialPort.IsOpen)
             {
                 serialPort.Open();
                 Debug.Log("Serial Port Opened!");
-                serialPort.WriteLine("ATI\r"); // Send test command
+            }
+            if (obdThread == null || !obdThread.IsAlive) // ✅ Ensure the thread starts only once
+            {
+                obdThread = new Thread(ReadOBDData);
+                obdThread.Start();
             }
 
-            obdThread = new Thread(ReadOBDData);
-            obdThread.Start();
         }
         catch (System.Exception e)
         {
             Debug.LogError("Error opening serial port: " + e.Message);
         }
-
-        obdThread = new Thread(ReadOBDData);
-    
-
+        
+        
         initslash = GameObject.Find("Init-S");
         obdslash = GameObject.Find("OBD-S");
         ecuslash = GameObject.Find("ECU-S");
@@ -243,27 +243,29 @@ public class Initialize : MonoBehaviour
         yield return stisprite.DOColor(new Color(stisprite.color.r, stisprite.color.g, stisprite.color.b, 0f), fadeDuration).WaitForCompletion();
     } 
     void ReadOBDData()
+    {
+        Debug.Log("OBD-II Thread Started!"); // ✅ Confirm thread is running
+        while (isRunning && serialPort.IsOpen)
+        {
+            try
             {
-                while (isRunning && serialPort.IsOpen)
-                {
-                    try
-                    {
-                        serialPort.WriteLine("01 0C\r"); // Request RPM
-                        string response = serialPort.ReadLine().Trim(); // Remove extra spaces/newlines
-                        Debug.Log("Raw OBD Response: " + response); // ✅ Log raw response
-                        latestRPM = ParseRPM(response);
-                    }
-                    catch (System.TimeoutException)
-                    {
-                        latestRPM = "No Data";
-                    }
-                    catch (System.Exception e)
-                    {
-                        Debug.LogError("Serial Read Error: " + e.Message);
-                    }
-                    Thread.Sleep(100);
-                }
+                serialPort.WriteLine("01 0C\r"); // Request RPM
+                string response = serialPort.ReadLine().Trim(); // Remove extra spaces/newlines
+                Debug.Log("Raw OBD Response: " + response); // ✅ Log raw response
+                latestRPM = ParseRPM(response);
             }
+            catch (System.TimeoutException)
+            {
+                latestRPM = "No Data";
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError("Serial Read Error: " + e.Message);
+            }
+            Thread.Sleep(100);
+        }
+    }
+
 string ParseRPM(string rawResponse)
 {
     if (string.IsNullOrEmpty(rawResponse))
