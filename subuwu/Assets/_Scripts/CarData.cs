@@ -10,6 +10,8 @@ public class CarData : MonoBehaviour
     private Thread serialThread;
     private bool keepReading = true;
     
+    private bool timecheck = false;
+    
     public string portName = "COM3"; // Change this based on your OBD-II adapter
     public int baudRate = 115200; // Try 9600, 38400, or 115200 if needed
 
@@ -103,24 +105,25 @@ public class CarData : MonoBehaviour
         }
 
         // Example: Continuously request RPM and Speed in Unity
-        if (Time.frameCount % 60 == 0) // Request every 3 seconds
+        if (Time.frameCount % 600 == 0 && !timecheck) // Request every 3 seconds
         {
             SendCommand("010C"); // Request RPM
             //SendCommand("010D"); // Request Speed
+        }
+
+        if (Time.frameCount % 60 == 0 && timecheck)
+        {
+            SendCommand("010C");
         }
     }
 
     private void ProcessOBDData(string response)
     {
         // Ignore "SEARCHING..." responses
-        if  (response.Contains("SEARCHING"))
+        if (string.IsNullOrWhiteSpace(response) || response.Contains("SEARCHING") || response.Contains("?"))
         {
-            if (Time.frameCount % 600 == 0)
-            {
-                Debug.LogWarning("Response was " + response);
-                return;
-            }
-           
+            Debug.LogWarning("⚠ Ignored invalid response: " + response);
+            return;
         }
 
         Debug.Log("📥 Raw Response: " + response);
@@ -135,6 +138,7 @@ public class CarData : MonoBehaviour
                 int B = Convert.ToInt32(bytes[3], 16);
                 int rpm = ((A * 256) + B) / 4;
                 Debug.Log("🔥 Engine RPM: " + rpm);
+                timecheck = true;
             }
             else if (bytes[0] == "41" && bytes[1] == "0D") // Speed
             {
