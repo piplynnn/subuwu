@@ -68,7 +68,7 @@ public class CarData : MonoBehaviour
         {
             serialPort.Write(command + "\r"); // Ensure proper termination
             Debug.Log("📤 Sent: " + command);
-            Thread.Sleep(500); // Allow ECU time to process request
+            Thread.Sleep(100); // Allow ECU time to process request
         }
     }
 
@@ -137,7 +137,7 @@ public class CarData : MonoBehaviour
                 int A = Convert.ToInt32(bytes[2], 16);
                 int B = Convert.ToInt32(bytes[3], 16);
                 int rpm = ((A * 256) + B) / 4;
-                Debug.Log("🔥 Engine RPM: " + rpm);
+                Debug.Log("Engine RPM: " + rpm);
                 timecheck = true;
             }
             else if (bytes[0] == "41" && bytes[1] == "0D") // Speed
