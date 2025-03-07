@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using System.IO.Ports;
+using System.Threading;
 
 using DG.Tweening;
 
@@ -32,6 +34,7 @@ public class Initialize : MonoBehaviour
     public bool sdoutcome = false;
     public bool sdchecked = false;
     public bool sdranonce = false;
+    private bool isRunning = true;
     private bool check1 = false;
     private bool check2 = false;
     private bool check3 = false;
@@ -39,6 +42,9 @@ public class Initialize : MonoBehaviour
     private float waitTime1;
     private float waitTime2;
     private float waitTime3;
+    private string latestRPM = "0";
+    public SerialPort serialPort = new SerialPort("COM3", 115200);
+    private Thread obdThread;
 
 
 
@@ -51,6 +57,23 @@ public class Initialize : MonoBehaviour
 
     void Start()
     {
+        try
+        {
+            serialPort.Open();
+            Debug.Log("Serial Port Opened!");
+            serialPort.WriteLine("ATI\r"); // Send test command
+            
+            obdThread = new Thread(ReadOBDData);
+            obdThread.Start();
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError("Error opening serial port: " + e.Message);
+        }
+
+        obdThread = new Thread(ReadOBDData);
+    
+
         initslash = GameObject.Find("Init-S");
         obdslash = GameObject.Find("OBD-S");
         ecuslash = GameObject.Find("ECU-S");
@@ -69,6 +92,8 @@ public class Initialize : MonoBehaviour
         obd();
         ecu();
         sd();
+        Debug.Log (latestRPM);
+       
 
         if (timer >= interval)
         {
@@ -213,5 +238,37 @@ public class Initialize : MonoBehaviour
     public IEnumerator FadeOut()
     {
         yield return stisprite.DOColor(new Color(stisprite.color.r, stisprite.color.g, stisprite.color.b, 0f), fadeDuration).WaitForCompletion();
+    }
+    void ReadOBDData()
+    {
+        while (serialPort.IsOpen)
+        {
+            try
+            {
+                serialPort.WriteLine("01 0C\r"); // Request RPM
+                string response = serialPort.ReadLine();
+                latestRPM = ParseRPM(response);
+                Thread.Sleep(25); // Adjust polling rate
+            }
+            catch (System.TimeoutException)
+            {
+                latestRPM = "No Data";
+                
+            }
+            
+        }
+    }
+    string ParseRPM(string rawResponse)
+    {
+        if (rawResponse.Length >= 4)
+        {
+            string hexRPM = rawResponse.Substring(4, 4); // Extract "0B A8"
+            int rpm = (int.Parse(hexRPM.Substring(0, 2), System.Globalization.NumberStyles.HexNumber) * 256) +
+                      int.Parse(hexRPM.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
+            
+            return (rpm / 4).ToString(); // Apply division
+            
+        }
+        return "Invalid Data";
     }
 }
