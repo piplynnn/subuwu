@@ -58,6 +58,7 @@ public class CarData : MonoBehaviour
     }
 
 
+
     void Update()
     {
         // ✅ Safely retrieve and display latest OBD-II data
@@ -77,7 +78,7 @@ public class CarData : MonoBehaviour
             {
                 try
                 {
-                    serialPort.WriteLine("01 0C\r"); // ✅ Request RPM
+                    serialPort.WriteLine("01 0D\r"); // ✅ Request RPM
                     Thread.Sleep(500); // ✅ Wait for ECU response
 
                     // ✅ Read the full response
@@ -115,6 +116,7 @@ public class CarData : MonoBehaviour
             Thread.Sleep(100); // ✅ Prevents excessive CPU usage
         }
     }
+
 
 
     string ParseRPM(string rawResponse)
