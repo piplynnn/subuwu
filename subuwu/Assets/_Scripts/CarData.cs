@@ -66,7 +66,7 @@ public class CarData : MonoBehaviour
         {
             serialPort.Write(command + "\r"); // Ensure proper termination
             Debug.Log("📤 Sent: " + command);
-            Thread.Sleep(200); // Allow ECU time to process request
+            Thread.Sleep(500); // Allow ECU time to process request
         }
     }
 
@@ -106,7 +106,7 @@ public class CarData : MonoBehaviour
         if (Time.frameCount % 180 == 0) // Request every 3 seconds
         {
             SendCommand("010C"); // Request RPM
-            SendCommand("010D"); // Request Speed
+            //SendCommand("010D"); // Request Speed
         }
     }
 
