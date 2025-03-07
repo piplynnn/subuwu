@@ -12,56 +12,78 @@ public class CarData : MonoBehaviour
     private string obdRawResponse = ""; // Stores raw response for debugging
     private object dataLock = new object(); // Ensures thread safety
 
-    void Start()
-    {
-        serialPort = new SerialPort("COM3", 115200, Parity.None, 8, StopBits.One);
-        serialPort.ReadTimeout = 3000;  // ✅ Increase timeout to prevent missing data
-        serialPort.WriteTimeout = 3000;
+void Start()
+{
+    string portName = "COM3"; // Change this to match your actual COM port
+    int baudRate = 115200;
+    int maxRetries = 3;
+    int retries = 0;
 
+    serialPort = new SerialPort(portName, baudRate, Parity.None, 8, StopBits.One);
+    serialPort.ReadTimeout = 3000;
+    serialPort.WriteTimeout = 3000;
+
+    while (retries < maxRetries)
+    {
         try
         {
             if (!serialPort.IsOpen)
             {
+                Debug.Log($"🔄 Attempting to open Serial Port... (Try {retries + 1}/{maxRetries})");
                 serialPort.Open();
                 Debug.Log("✅ Serial Port Opened!");
-
-                // ✅ Reset OBD-II Adapter
-                serialPort.Write("ATZ\r");
-                Thread.Sleep(1000);
-
-                // ✅ Force a Specific Protocol (Try ATSP6 first, then ATSP1)
-                serialPort.Write("ATSP6\r"); // 🚨 If ATSP6 doesn't work, try ATSP1
-                Thread.Sleep(500);
-
-                // ✅ Enable Adaptive Timing (Faster ECU Responses)
-                serialPort.Write("ATAT1\r");
-                Thread.Sleep(500);
-
-                // ✅ Turn off Headers (Removes extra text from responses)
-                serialPort.Write("ATH0\r");
-                Thread.Sleep(500);
-
-                Debug.Log("✅ OBD-II Adapter Initialized!");
-
-                // ✅ Manual test to check if ECU responds
-                serialPort.Write("01 0C\r"); // Request RPM manually
-                Thread.Sleep(1000);
-                string response = serialPort.ReadLine().Trim();
-                Debug.Log("✅ Manual OBD Response: " + response);
-            }
-
-            if (obdThread == null || !obdThread.IsAlive)
-            {
-                obdThread = new Thread(ReadOBDData);
-                obdThread.IsBackground = true;
-                obdThread.Start();
+                break; // Exit loop on success
             }
         }
         catch (System.Exception e)
         {
-            Debug.LogError("❌ Error opening serial port: " + e.Message);
+            Debug.LogError($"❌ Error opening serial port: {e.Message}");
+            retries++;
+            Thread.Sleep(2000); // Wait before retrying
         }
     }
+
+    if (!serialPort.IsOpen)
+    {
+        Debug.LogError("❌ Failed to open serial port after multiple attempts.");
+        return; // Stop execution if the port cannot open
+    }
+
+    // ✅ Initialize OBD-II Adapter
+    try
+    {
+        serialPort.Write("ATZ\r");
+        Thread.Sleep(1000);
+
+        serialPort.Write("ATSP6\r"); // 🚨 If ATSP6 doesn't work, try ATSP1
+        Thread.Sleep(500);
+
+        serialPort.Write("ATAT1\r");
+        Thread.Sleep(500);
+
+        serialPort.Write("ATH0\r");
+        Thread.Sleep(500);
+
+        Debug.Log("✅ OBD-II Adapter Initialized!");
+
+        // ✅ Manual test to check if ECU responds
+        serialPort.Write("01 0C\r"); // Request RPM manually
+        Thread.Sleep(1000);
+        string response = serialPort.ReadLine().Trim();
+        Debug.Log("✅ Manual OBD Response: " + response);
+    }
+    catch (System.Exception e)
+    {
+        Debug.LogError($"❌ Error communicating with OBD-II adapter: {e.Message}");
+    }
+
+    if (obdThread == null || !obdThread.IsAlive)
+    {
+        obdThread = new Thread(ReadOBDData);
+        obdThread.IsBackground = true;
+        obdThread.Start();
+    }
+}
 
     void Update()
     {
