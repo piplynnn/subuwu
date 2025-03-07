@@ -55,9 +55,8 @@ public class CarData : MonoBehaviour
         {
             Debug.LogError("❌ Error opening serial port: " + e.Message);
         }
-    
-        
     }
+
 
     void Update()
     {
@@ -70,7 +69,7 @@ public class CarData : MonoBehaviour
 
     void ReadOBDData()
     {
-        Debug.Log("OBD-II Thread Started!");
+        Debug.Log("✅ OBD-II Thread Started!");
 
         while (isRunning)
         {
@@ -81,21 +80,21 @@ public class CarData : MonoBehaviour
                     serialPort.WriteLine("01 0C\r"); // ✅ Request RPM
                     Thread.Sleep(500); // ✅ Wait for ECU response
 
-                    // ✅ Check if there is data before reading
-                    if (serialPort.BytesToRead > 0)
-                    {
-                        string response = serialPort.ReadExisting().Trim(); // ✅ Read all available data
-                        Debug.Log("Raw OBD Response: " + response);
+                    // ✅ Read the full response
+                    string response = serialPort.ReadExisting().Trim(); 
+                    Debug.Log("🔍 Raw OBD Response: " + response);
 
-                        lock (dataLock) // ✅ Ensure thread safety
+                    if (response.Contains("SEARCHING") || response.Contains("STOPPED"))
+                    {
+                        Debug.LogError("❌ ECU is not responding properly. Try forcing a protocol.");
+                    }
+                    else
+                    {
+                        lock (dataLock) 
                         {
                             obdRawResponse = response;
                             latestRPM = ParseRPM(response);
                         }
-                    }
-                    else
-                    {
-                        Debug.LogWarning("No data available to read from OBD-II.");
                     }
                 }
                 catch (System.TimeoutException)
@@ -104,18 +103,19 @@ public class CarData : MonoBehaviour
                 }
                 catch (System.Exception e)
                 {
-                    Debug.LogError("Serial Read Error: " + e.Message);
+                    Debug.LogError("❌ Serial Read Error: " + e.Message);
                 }
             }
             else
             {
-                Debug.LogError("Serial Port Closed Unexpectedly!");
+                Debug.LogError("❌ Serial Port Closed Unexpectedly!");
                 break;
             }
 
             Thread.Sleep(100); // ✅ Prevents excessive CPU usage
         }
     }
+
 
     string ParseRPM(string rawResponse)
     {
