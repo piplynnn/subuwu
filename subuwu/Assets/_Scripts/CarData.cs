@@ -6,7 +6,7 @@ public class CarData : MonoBehaviour
 {
     private SerialPort serialPort;
     public string portName = "COM3"; // Change this to match your OBD-II adapter
-    public int baudRate = 38400; // Common baud rate for OBD-II adapters
+    public int baudRate = 115200; // Common baud rate for OBD-II adapters
 
     void Start()
     {
@@ -44,9 +44,10 @@ public class CarData : MonoBehaviour
         }
     }
 
+
     private string RequestRPM()
     {
-        serialPort.Write("010C\r"); // OBD-II request for RPM
+        serialPort.Write("010C"); // OBD-II request for RPM
         System.Threading.Thread.Sleep(100); // Small delay for response
         return serialPort.ReadLine();
     }
