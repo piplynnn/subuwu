@@ -111,7 +111,7 @@ public class CarData : MonoBehaviour
             SendCommand("010D"); // Request Speed
         }
 
-        if (Time.frameCount % 5 == 0 && timecheck)
+        if (Time.frameCount % 60 == 0 && timecheck)
         {
             //SendCommand("010C");
             SendCommand("010D");
