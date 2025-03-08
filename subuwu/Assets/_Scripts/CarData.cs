@@ -133,7 +133,7 @@ public class CarData : MonoBehaviour
         Debug.Log(bytes[0]);
         Debug.Log(bytes[1]);
 
-        if (bytes.Length >= 4)
+        if (bytes.Length >= 2)
          {
             int speed = Convert.ToInt32(bytes[2], 16); 
             Debug.Log("🏎 Speed: " + speed + " km/h");
