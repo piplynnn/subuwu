@@ -11,7 +11,7 @@ public class CarData : MonoBehaviour
     private bool keepReading = true;
     
     private bool timecheck = false;
-    private bool BothActive  = false;
+    public bool BothActive  = false;
     
     private bool ranonce = false;
     public string portName = "COM3"; // Change this based on your OBD-II adapter
