@@ -10,7 +10,7 @@ public class CarData : MonoBehaviour
     private Thread serialThread;
     private bool keepReading = true;
     
-    private bool timecheck = false;
+    public bool timecheck = false;
     public bool BothActive  = false;
     
     private bool ranonce = false;
