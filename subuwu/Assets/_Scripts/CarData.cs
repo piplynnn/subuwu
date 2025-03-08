@@ -130,6 +130,8 @@ public class CarData : MonoBehaviour
         Debug.Log("📥 Raw Response: " + response);
 
         string[] bytes = response.Split(' ');
+        Debug.Log(bytes[0]);
+        Debug.Log(bytes[1]);
 
         if (bytes.Length >= 8)
         {
