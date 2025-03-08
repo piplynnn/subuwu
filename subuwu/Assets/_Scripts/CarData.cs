@@ -105,7 +105,7 @@ public class CarData : MonoBehaviour
         }
 
         // Example: Continuously request RPM and Speed in Unity
-        if (Time.frameCount % 900 == 0 && !timecheck) // Request every 3 seconds
+        if (Time.frameCount % 600 == 0 && !timecheck) // Request every 3 seconds
         {
             //SendCommand("010C"); // Request RPM
             SendCommand("010D"); // Request Speed
@@ -127,7 +127,7 @@ public class CarData : MonoBehaviour
             return;
         }
 
-        Debug.Log("📥 Raw Response: " + response);
+        //Debug.Log("📥 Raw Response: " + response);
 
         string[] bytes = response.Split(' ');
         
@@ -151,7 +151,7 @@ public class CarData : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("⚠ Invalid OBD-II response format: " + response);
+            //Debug.LogWarning("⚠ Invalid OBD-II response format: " + response);
         }
     }
 
