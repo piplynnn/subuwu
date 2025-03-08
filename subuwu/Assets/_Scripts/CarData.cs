@@ -130,16 +130,25 @@ public class CarData : MonoBehaviour
         Debug.Log("📥 Raw Response: " + response);
 
         string[] bytes = response.Split(' ');
-        Debug.Log(bytes[0]);
-        Debug.Log(bytes[1]);
+        
 
         if (bytes.Length >= 2)
-         {
-            int speed = Convert.ToInt32(bytes[2], 16); 
-            Debug.Log("🏎 Speed: " + speed + " km/h");
-            timecheck = true;
-         }
-        
+        {
+            if (bytes[0] == "41" && bytes[1] == "0C") // RPM
+            {
+                int A = Convert.ToInt32(bytes[2], 16);
+                int B = Convert.ToInt32(bytes[3], 16);
+                int rpm = ((A * 256) + B) / 4;
+                Debug.Log("Engine RPM: " + rpm);
+                timecheck = true;
+            }
+            else if (bytes[0] == "41" && bytes[1] == "0D") // Speed
+            {
+                int speed = Convert.ToInt32(bytes[2], 16);
+                Debug.Log("🏎 Speed: " + speed + " km/h");
+                timecheck = true;
+            }
+        }
         else
         {
             Debug.LogWarning("⚠ Invalid OBD-II response format: " + response);
