@@ -131,7 +131,7 @@ public class CarData : MonoBehaviour
 
         string[] bytes = response.Split(' ');
 
-        if (bytes.Length >= 4)
+        if (bytes.Length >= 8)
         {
             if (bytes[0] == "41" && bytes[1] == "0C") // RPM
             {
