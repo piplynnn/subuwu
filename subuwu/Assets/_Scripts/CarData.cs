@@ -124,7 +124,7 @@ public class CarData : MonoBehaviour
             ranonce2 = true;
         }
 
-        else if (BothActive)
+        else if (Time.frameCount % 60 == 0 && BothActive)
         {
             SendCommand("010C");
             //SendCommand("010D");
