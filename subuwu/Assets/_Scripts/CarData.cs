@@ -17,6 +17,10 @@ public class CarData : MonoBehaviour
     public bool ranonce2 = false;
     public bool ranonceloop = false;
     public bool ranonceloop2 = false;
+    public static bool ObdChecked;
+    public static bool ObdFound;
+    public static bool EcuData;
+    public static bool EcuCheck;
 
     public static int rpm;
     public static int mph;
@@ -51,10 +55,14 @@ public class CarData : MonoBehaviour
             serialThread = new Thread(ReadSerial);
             serialThread.IsBackground = true;
             serialThread.Start();
+            ObdChecked = true;
+            ObdFound = true;
         }
         catch (Exception e)
         {
             Debug.LogError("❌ Failed to connect to OBD-II: " + e.Message);
+            ObdChecked = true;
+            ObdFound = false;
         }
     }
 
@@ -161,6 +169,20 @@ public class CarData : MonoBehaviour
                 Debug.Log("Engine RPM: " + rpm);
                 if (!ranonceloop)
                 {
+                    int initrpm = rpm;
+                    if (initrpm > 0)
+                    {
+                        EcuData = true;
+                        EcuCheck = true;
+
+                    }
+
+                    else
+                    {
+                        EcuData = false;
+                        EcuCheck = true;
+                    }
+                   
                     timecheck = true;
                     ranonceloop = true;
                 }
@@ -181,10 +203,7 @@ public class CarData : MonoBehaviour
                 
             }
         }
-        else
-        {
-            //Debug.LogWarning("⚠ Invalid OBD-II response format: " + response);
-        }
+    
     }
 
     void OnApplicationQuit()

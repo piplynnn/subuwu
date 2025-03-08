@@ -5,6 +5,7 @@ using System.IO.Ports;
 using System.Threading;
 
 using DG.Tweening;
+using UnityEditor.Build.Content;
 
 public class Initialize : MonoBehaviour
 {
@@ -21,8 +22,7 @@ public class Initialize : MonoBehaviour
 
     public Sprite check;
     public Sprite uncheck;
-
-    public SpriteRenderer stisprite;
+    
 
     public bool initoutcome = false;
     public bool obdoutcome = false;
@@ -34,17 +34,15 @@ public class Initialize : MonoBehaviour
     public bool sdoutcome = false;
     public bool sdchecked = false;
     public bool sdranonce = false;
-    private bool isRunning = true;
     private bool check1 = false;
     private bool check2 = false;
     private bool check3 = false;
+    private bool faderanonce = false;
 
     private float waitTime1;
     private float waitTime2;
     private float waitTime3;
-    private string latestRPM = "0";
-    public SerialPort serialPort = new SerialPort("COM3", 115200);
-    private Thread obdThread;
+
 
 
 
@@ -55,28 +53,12 @@ public class Initialize : MonoBehaviour
 
 
 
+
     void Start()
     {
-        try
-        {
-            if (!serialPort.IsOpen)
-            {
-                serialPort.Open();
-                Debug.Log("Serial Port Opened!");
-            }
-            if (obdThread == null || !obdThread.IsAlive) // ✅ Ensure the thread starts only once
-            {
-                obdThread = new Thread(ReadOBDData);
-                obdThread.Start();
-            }
 
-        }
-        catch (System.Exception e)
-        {
-            Debug.LogError("Error opening serial port: " + e.Message);
-        }
-        
-        
+
+
         initslash = GameObject.Find("Init-S");
         obdslash = GameObject.Find("OBD-S");
         ecuslash = GameObject.Find("ECU-S");
@@ -84,8 +66,8 @@ public class Initialize : MonoBehaviour
         waitTime1 = Random.Range(1f, 2f);
         waitTime2 = Random.Range(3f, 5f);
         waitTime3 = Random.Range(5f, 6f);
-        stisprite = sti.GetComponent<SpriteRenderer>();
-     
+        
+
     }
 
     void Update()
@@ -95,8 +77,8 @@ public class Initialize : MonoBehaviour
         obd();
         ecu();
         sd();
-        Debug.Log (latestRPM);
-       
+
+
 
         if (timer >= interval)
         {
@@ -129,20 +111,37 @@ public class Initialize : MonoBehaviour
 
         }
 
+        if (obdranonce && !obdchecked || ecuranonce && !ecuchecked)
+        {
+            initslash.GetComponent<SpriteRenderer>().sprite = uncheck;
+            initslash.transform.rotation = Quaternion.Euler(0, 0, 0);
+            initslash.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+            initoutcome = true;
+
+        }
+
+
     }
 
     public void obd()
     {
         obdchecked = true;
-        //try
-        //catch
-
-
-        if (obdchecked)
+        StartCoroutine(ActivateOBD());
+        /*
+        if (CarData.ObdChecked && CarData.ObdFound)
         {
+            obdchecked =true;
+            StartCoroutine(ActivateOBD());
+        }
+
+        if (CarData.ObdChecked && !CarData.ObdFound)
+        {
+            obdchecked = false;
             StartCoroutine(ActivateOBD());
 
         }
+        */
+
 
 
     }
@@ -150,11 +149,21 @@ public class Initialize : MonoBehaviour
     public void ecu()
     {
         ecuchecked = true;
-        if (ecuchecked)
+        StartCoroutine(ActivateECU());
+        /*
+        if (CarData.EcuData && CarData.EcuCheck)
         {
+            ecuchecked = true;
             StartCoroutine(ActivateECU());
 
         }
+
+        if (!CarData.EcuData && CarData.EcuCheck)
+        {
+            ecuchecked = false;
+            StartCoroutine(ActivateECU());
+        }
+        */
 
     }
 
@@ -184,6 +193,16 @@ public class Initialize : MonoBehaviour
 
         }
 
+        if (!obdchecked && !obdranonce)
+        {
+            initslash.GetComponent<SpriteRenderer>().sprite = uncheck;
+            obdslash.GetComponent<SpriteRenderer>().sprite = uncheck;
+            obdslash.transform.rotation = Quaternion.Euler(0, 0, 0);
+            obdslash.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+            Debug.Log("Bool set to TRUE after " + waitTime1 + " seconds.");
+            obdranonce = true;
+        }
+
     }
 
     IEnumerator ActivateECU()
@@ -194,12 +213,25 @@ public class Initialize : MonoBehaviour
         if (ecuchecked && !ecuranonce)
         {
             ecuslash.GetComponent<SpriteRenderer>().sprite = check;
+
             ecuslash.transform.rotation = Quaternion.Euler(0, 0, 0);
             ecuslash.transform.localScale = new Vector3(1, 1, 1);
             Debug.Log("Bool set to TRUE after " + waitTime2 + " seconds.");
             ecuranonce = true;
             check2 = true;
         }
+
+        if (!ecuchecked && !ecuranonce)
+        {
+            ecuslash.GetComponent<SpriteRenderer>().sprite = uncheck;
+            initslash.GetComponent<SpriteRenderer>().sprite = uncheck;
+            ecuslash.transform.rotation = Quaternion.Euler(0, 0, 0);
+            ecuslash.transform.localScale = new Vector3(1, 1, 1);
+            Debug.Log("Bool set to TRUE after " + waitTime2 + " seconds.");
+            ecuranonce = true;
+            check2 = true;
+        }
+
 
     }
 
@@ -215,6 +247,7 @@ public class Initialize : MonoBehaviour
             Debug.Log("Bool set to TRUE after " + waitTime3 + " seconds.");
             sdranonce = true;
             check3 = true;
+            
         }
     }
 
@@ -223,75 +256,18 @@ public class Initialize : MonoBehaviour
         yield return new WaitForSeconds(2f);
         canv.SetActive(false);
         slashes.SetActive(false);
-
-        // Wait for FadeIn to complete
-        yield return FadeIn();
-
-        yield return new WaitForSeconds(2f);
-
-        // Wait for FadeOut to complete
-        yield return FadeOut();
-    }
-
-    public IEnumerator FadeIn()
-    {
-        yield return stisprite.DOColor(new Color(stisprite.color.r, stisprite.color.g, stisprite.color.b, 1f), fadeDuration).WaitForCompletion();
-    }
-
-    public IEnumerator FadeOut()
-    {
-        yield return stisprite.DOColor(new Color(stisprite.color.r, stisprite.color.g, stisprite.color.b, 0f), fadeDuration).WaitForCompletion();
-    } 
-    void ReadOBDData()
-    {
-        Debug.Log("OBD-II Thread Started!"); // ✅ Confirm thread starts
-
-        while (isRunning && serialPort.IsOpen)
+        if (!faderanonce)
         {
-            try
-            {
-                serialPort.WriteLine("01 0C\r"); // Request RPM
-                string response = serialPort.ReadLine().Trim(); // Remove extra spaces/newlines
-                Debug.Log("Raw OBD Response: [" + response + "]"); // ✅ Debugging raw response
-
-                latestRPM = ParseRPM(response);
-            }
-            catch (System.TimeoutException)
-            {
-                latestRPM = "No Data";
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogError("Serial Read Error: " + e.Message);
-            }
-            Thread.Sleep(100);
+            Fade.fadeIn = true;
+            faderanonce = true;
         }
+        
+        
     }
-
-
-string ParseRPM(string rawResponse)
-{
-    if (string.IsNullOrEmpty(rawResponse))
+    private IEnumerator AudioWait()
     {
-        return "Invalid Data";
+        yield return new WaitForSeconds(2f);
+        
     }
-
-    // ✅ Extract the last two hex values (XX YY)
-    string[] parts = rawResponse.Split(' ');
-    if (parts.Length >= 4 && parts[0] == "41" && parts[1] == "0C") // Ensure correct response
-    {
-        int rpm = (int.Parse(parts[2], System.Globalization.NumberStyles.HexNumber) * 256) +
-                  int.Parse(parts[3], System.Globalization.NumberStyles.HexNumber);
-        return (rpm / 4).ToString(); // Divide by 4 for actual RPM
-    }
-
-    return "Invalid Data"; // If the format is incorrect
 }
 
-    void OnDestroy()
-    {
-        isRunning = false;
-        if (obdThread != null) obdThread.Join();
-        if (serialPort.IsOpen) serialPort.Close();
-    }
-}
