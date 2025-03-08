@@ -11,7 +11,9 @@ public class CarData : MonoBehaviour
     private bool keepReading = true;
     
     private bool timecheck = false;
+    private bool BothActive  = false;
     
+    private bool ranonce = false;
     public string portName = "COM3"; // Change this based on your OBD-II adapter
     public int baudRate = 115200; // Try 9600, 38400, or 115200 if needed
 
@@ -105,15 +107,22 @@ public class CarData : MonoBehaviour
         }
 
         // Example: Continuously request RPM and Speed in Unity
-        if (Time.frameCount % 600 == 0 && !timecheck) // Request every 3 seconds
-        {
-            //SendCommand("010C"); // Request RPM
-            SendCommand("010D"); // Request Speed
+        if (Time.frameCount % 600 == 0 && !ranonce) {
+            
+            SendCommand("010C"); // Request RPM
+            ranonce = true;
+            
         }
 
-        if (Time.frameCount % 60 == 0 && timecheck)
+        if (Time.frameCount % 600 == 0 && timecheck)
         {
-            //SendCommand("010C");
+            SendCommand("010D");
+            timecheck = false;
+        }
+
+        if (Time.frameCount % 60 == 0 && BothActive)
+        {
+            SendCommand("010C");
             SendCommand("010D");
         }
     }
@@ -141,12 +150,14 @@ public class CarData : MonoBehaviour
                 int rpm = ((A * 256) + B) / 4;
                 Debug.Log("Engine RPM: " + rpm);
                 timecheck = true;
+                
             }
             else if (bytes[0] == "41" && bytes[1] == "0D") // Speed
             {
                 int speed = Convert.ToInt32(bytes[2], 16);
                 Debug.Log("🏎 Speed: " + speed + " km/h");
-                timecheck = true;
+                
+                BothActive = true;
             }
         }
         else
