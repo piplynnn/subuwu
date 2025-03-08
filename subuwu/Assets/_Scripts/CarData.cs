@@ -114,13 +114,13 @@ public class CarData : MonoBehaviour
             
         }
 
-        if (Time.frameCount % 600 == 0 && timecheck)
+        else if (Time.frameCount % 600 == 0 && timecheck)
         {
             SendCommand("010D");
             timecheck = false;
         }
 
-        if (Time.frameCount % 60 == 0 && BothActive)
+        else if (Time.frameCount % 60 == 0 && BothActive)
         {
             SendCommand("010C");
             SendCommand("010D");
