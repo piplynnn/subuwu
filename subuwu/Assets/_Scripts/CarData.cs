@@ -18,7 +18,7 @@ public class CarData : MonoBehaviour
     public bool ranonceloop = false;
     public bool ranonceloop2 = false;
 
-    public int rpm;
+    public static int rpm;
     public static int mph;
     
     public string portName = "COM3"; // Change this based on your OBD-II adapter

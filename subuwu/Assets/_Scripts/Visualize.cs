@@ -9,7 +9,7 @@ public class Visualize : MonoBehaviour
     {
         if (textComponent != null)
         {
-            textComponent.text = CarData.mph.ToString() + " mph";
+            textComponent.text = CarData.rpm.ToString() + " rpm";
         }
     }
 }
