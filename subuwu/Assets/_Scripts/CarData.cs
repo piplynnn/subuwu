@@ -124,16 +124,15 @@ public class CarData : MonoBehaviour
             ranonce2 = true;
         }
 
-        else if (Time.frameCount % 60 == 0 && BothActive)
+        else if (Time.frameCount % 6 == 0 && BothActive)
         {
             SendCommand("010C");
-            
-            
-        }
-        else if (Time.frameCount % 30 == 0 && BothActive)
-        {
+            Thread.Sleep(100);
             SendCommand("010D");
+            Thread.Sleep(100);
+            
         }
+    
     }
 
     private void ProcessOBDData(string response)
