@@ -120,7 +120,7 @@ public class CarData : MonoBehaviour
             timecheck = false;
         }
 
-        else if (Time.frameCount % 60 == 0 && BothActive)
+        else if (BothActive)
         {
             SendCommand("010C");
             SendCommand("010D");
