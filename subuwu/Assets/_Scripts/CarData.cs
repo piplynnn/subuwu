@@ -127,9 +127,9 @@ public class CarData : MonoBehaviour
         else if (Time.frameCount % 6 == 0 && BothActive)
         {
             SendCommand("010C");
-            Thread.Sleep(20);
+            Thread.Sleep(50);
             SendCommand("010D");
-            Thread.Sleep(20);
+            Thread.Sleep(50);
             
         }
     
