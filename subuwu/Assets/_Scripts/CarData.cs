@@ -133,7 +133,7 @@ public class CarData : MonoBehaviour
         Debug.Log(bytes[0]);
         Debug.Log(bytes[1]);
 
-        if (bytes.Length >= 8)
+        if (bytes.Length >= 4)
         {
             if (bytes[0] == "41" && bytes[1] == "0C") // RPM
             {
@@ -143,7 +143,7 @@ public class CarData : MonoBehaviour
                 Debug.Log("Engine RPM: " + rpm);
                 timecheck = true;
             }
-            else if (bytes[0] == "41" && bytes[1] == "0D") // Speed
+            if (bytes[0] == "41" && bytes[1] == "0D") // Speed
             {
                 int speed = Convert.ToInt32(bytes[2], 16);
                 Debug.Log("🏎 Speed: " + speed + " km/h");
