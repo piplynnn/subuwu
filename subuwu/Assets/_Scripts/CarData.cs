@@ -127,7 +127,7 @@ public class CarData : MonoBehaviour
         else if (Time.frameCount % 60 == 0 && BothActive)
         {
             SendCommand("010C");
-            //SendCommand("010D");
+            SendCommand("010D");
             Debug.Log("Both sent to OBD-II");
         }
     }
