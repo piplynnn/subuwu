@@ -13,7 +13,11 @@ public class CarData : MonoBehaviour
     public bool timecheck = false;
     public bool BothActive  = false;
     
-    private bool ranonce = false;
+    public bool ranonce = false;
+    public bool ranonce2 = false;
+    public bool ranonceloop = false;
+    public bool ranonceloop2 = false;
+    
     public string portName = "COM3"; // Change this based on your OBD-II adapter
     public int baudRate = 115200; // Try 9600, 38400, or 115200 if needed
 
@@ -114,10 +118,10 @@ public class CarData : MonoBehaviour
             
         }
 
-        else if (Time.frameCount % 600 == 0 && timecheck)
+        else if (Time.frameCount % 600 == 0 && !ranonce2 && timecheck)
         {
             SendCommand("010D");
-            timecheck = false;
+            ranonce2 = true;
         }
 
         else if (BothActive)
@@ -149,15 +153,26 @@ public class CarData : MonoBehaviour
                 int B = Convert.ToInt32(bytes[3], 16);
                 int rpm = ((A * 256) + B) / 4;
                 Debug.Log("Engine RPM: " + rpm);
-                timecheck = true;
+                if (!ranonceloop)
+                {
+                    timecheck = true;
+                    ranonceloop = true;
+                }
+                
                 
             }
             else if (bytes[0] == "41" && bytes[1] == "0D") // Speed
             {
                 int speed = Convert.ToInt32(bytes[2], 16);
                 Debug.Log("🏎 Speed: " + speed + " km/h");
+                if (!ranonceloop2)
+                {
+                    BothActive = true;
+                    ranonceloop2 = true;
+                    
+                }
                 
-                BothActive = true;
+                
             }
         }
         else
