@@ -134,12 +134,13 @@ public class CarData : MonoBehaviour
             SendCommand("010D");
             ranonce2 = true;
         }
-
+		/*
         if (Time.frameCount % 6 == 0 && BothActive)
         {
             SendCommand("010C");
             
         }
+*/4
         if (Time.frameCount % 10 == 0 && BothActive)
         {
    
