@@ -194,7 +194,7 @@ public class CarData : MonoBehaviour
             else if (bytes[0] == "41" && bytes[1] == "0D") // Speed
             {
                 int kmh = Convert.ToInt32(bytes[2], 16);
-                double mph = kmh * 0.621371;
+                mph = Convert.ToInt32(kmh * 0.621371);
                 Debug.Log("🏎 Speed: " + mph + " mph");
                 if (!ranonceloop2)
                 {
