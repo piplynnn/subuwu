@@ -134,19 +134,15 @@ public class CarData : MonoBehaviour
             SendCommand("010D");
             ranonce2 = true;
         }
-		/*
-        if (Time.frameCount % 6 == 0 && BothActive)
-        {
-            SendCommand("010C");
-            
-        }
-*/
-        if (Time.frameCount % 10 == 0 && BothActive)
-        {
-   
-            SendCommand("010D");
-            
-        }
+		
+ 		if (Time.frameCount % 10 == 0 && BothActive)
+		{
+    		SendCommand("010D");
+		}
+		else if (Time.frameCount % 6 == 0 && BothActive)
+		{
+    		SendCommand("010C");
+		}
 
     
     }
@@ -199,7 +195,7 @@ public class CarData : MonoBehaviour
             {
                 int kmh = Convert.ToInt32(bytes[2], 16);
                 double mph = kmh * 0.621371;
-                Debug.Log("🏎 Speed: " + mph + " km/h");
+                Debug.Log("🏎 Speed: " + mph + " mph");
                 if (!ranonceloop2)
                 {
                     BothActive = true;

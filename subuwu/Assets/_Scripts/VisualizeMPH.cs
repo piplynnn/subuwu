@@ -5,9 +5,7 @@ using UnityEngine;
 
 public class VisualizeMPH : MonoBehaviour
 {
-    public class VisualizeRPM : MonoBehaviour
-    {
-        public TextMeshProUGUI textComponent;
+    public TextMeshProUGUI textComponent;
 
         void Update()
         {
@@ -17,4 +15,3 @@ public class VisualizeMPH : MonoBehaviour
             }
         }
     }
-}
