@@ -140,7 +140,7 @@ public class CarData : MonoBehaviour
             SendCommand("010C");
             
         }
-        else if ((Time.frameCount+) % 10 == 0 && BothActive)
+        else if (Time.frameCount % 10 == 0 && BothActive)
         {
    
             SendCommand("010D");
