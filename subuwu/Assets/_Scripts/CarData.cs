@@ -138,10 +138,15 @@ public class CarData : MonoBehaviour
         else if (Time.frameCount % 6 == 0 && BothActive)
         {
             SendCommand("010C");
-            Thread.Sleep(50);
-            SendCommand("010D");
-            Thread.Sleep(50);
+            
         }
+        else if ((Time.frameCount+3) % 6 == 0 && BothActive)
+        {
+   
+            SendCommand("010D");
+            
+        }
+
     
     }
 
@@ -191,7 +196,8 @@ public class CarData : MonoBehaviour
             }
             else if (bytes[0] == "41" && bytes[1] == "0D") // Speed
             {
-                mph = Convert.ToInt32(bytes[2], 16);
+                int kmh = Convert.ToInt32(bytes[2], 16);
+                double mph = kmh * 0.621371;
                 Debug.Log("🏎 Speed: " + mph + " km/h");
                 if (!ranonceloop2)
                 {
@@ -218,7 +224,7 @@ public class CarData : MonoBehaviour
         if (serialPort != null && serialPort.IsOpen)
         {
             serialPort.Close();
-            Debug.Log("🔌 Disconnected from OBD-II.");
+            Debug.Log(" Disconnected from OBD-II.");
         }
     }
 }

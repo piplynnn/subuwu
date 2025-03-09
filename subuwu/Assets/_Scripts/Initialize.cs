@@ -22,6 +22,8 @@ public class Initialize : MonoBehaviour
 
     public Sprite check;
     public Sprite uncheck;
+    public AudioClip startup;
+    public AudioSource audio;
     
 
     public bool initoutcome = false;
@@ -127,6 +129,7 @@ public class Initialize : MonoBehaviour
     {
         obdchecked = true;
         StartCoroutine(ActivateOBD());
+        
         /*
         if (CarData.ObdChecked && CarData.ObdFound)
         {
@@ -141,6 +144,7 @@ public class Initialize : MonoBehaviour
 
         }
         */
+        
 
 
 
@@ -164,6 +168,7 @@ public class Initialize : MonoBehaviour
             StartCoroutine(ActivateECU());
         }
         */
+        
 
     }
 
@@ -226,10 +231,10 @@ public class Initialize : MonoBehaviour
             ecuslash.GetComponent<SpriteRenderer>().sprite = uncheck;
             initslash.GetComponent<SpriteRenderer>().sprite = uncheck;
             ecuslash.transform.rotation = Quaternion.Euler(0, 0, 0);
-            ecuslash.transform.localScale = new Vector3(1, 1, 1);
+            ecuslash.transform.localScale = new Vector3(0.5f,0.5f,0.5f);
             Debug.Log("Bool set to TRUE after " + waitTime2 + " seconds.");
             ecuranonce = true;
-            check2 = true;
+            
         }
 
 
@@ -260,6 +265,7 @@ public class Initialize : MonoBehaviour
         {
             Fade.fadeIn = true;
             faderanonce = true;
+            audio.PlayOneShot(startup);
         }
         
         

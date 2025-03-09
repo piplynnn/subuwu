@@ -6,11 +6,18 @@ public class Fade : MonoBehaviour
 {
     public static bool fadeIn = false;
     public static bool fadeOut = false;
+    public static bool cammove = false;
+    public GameObject firstscreen;
     [SerializeField] private CanvasGroup canvasGroup;
+    public Camera mainCamera;
+    public Camera secondCamera;
 
     private void Awake()
     {
+        secondCamera.enabled = false;
         canvasGroup.alpha = 0;
+        firstscreen = GameObject.Find("Canvas0");
+        
     }
 
     private void Update()
@@ -39,9 +46,16 @@ public class Fade : MonoBehaviour
                 {
                     canvasGroup.alpha = 0;
                     fadeOut = false;
+                    cammove = true;
+                    StartCoroutine(FadeInCanv0());
                 }
             }
         }
+    }
+    void SwitchCamera()
+    {
+        mainCamera.enabled = false;  
+        secondCamera.enabled = true; 
     }
 
     private IEnumerator WaitAndTriggerFadeOut()
@@ -49,4 +63,14 @@ public class Fade : MonoBehaviour
         yield return new WaitForSeconds(2f);
         fadeOut = true;
     }
+
+    private IEnumerator FadeInCanv0()
+    {
+        yield return new WaitForSeconds(1.5f);
+        SwitchCamera();
+        FadeIN.fadeIn = true;
+        
+        
+    }
+ 
 }
