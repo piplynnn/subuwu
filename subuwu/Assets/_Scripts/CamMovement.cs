@@ -4,15 +4,18 @@ using UnityEngine;
 
 public class CamMovement : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public GameObject cam;
 
-    // Update is called once per frame
     void Update()
     {
+        if (FadeIN.fadeonce && !FadeIN.fadeIn)
+        {
+            if(Input.GetKey(KeyCode.RightArrow))
+            {
+                Vector3 newPos = new Vector3(transform.position.x + 1280, transform.position.y, transform.position.z);
+                StartCoroutine(LerpTra)
+            }
+        }
         
     }
 }

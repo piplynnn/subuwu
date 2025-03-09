@@ -9,6 +9,7 @@ public class FadeIN : MonoBehaviour
     public AudioSource audio;
     public AudioClip clip;
     private bool playonce;
+    static public bool fadeonce = false;
     
     [SerializeField] private CanvasGroup canvasGroup;
 
@@ -36,6 +37,7 @@ public class FadeIN : MonoBehaviour
                 {
                     canvasGroup.alpha = 1;
                     fadeIn = false;
+                    fadeonce = true;
 
                 }
             }
