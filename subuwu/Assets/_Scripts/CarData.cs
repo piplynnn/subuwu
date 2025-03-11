@@ -11,7 +11,7 @@ public class CarData : MonoBehaviour
     private bool keepReading = true;
     
     public bool timecheck = false;
-    public bool BothActive  = false;
+    public static bool BothActive  = false;
     
     public bool ranonce = false;
     public bool ranonce2 = false;
@@ -21,7 +21,6 @@ public class CarData : MonoBehaviour
     public static bool ObdFound;
     public static bool EcuData;
     public static bool EcuCheck;
-
     public static int rpm;
     public static int mph;
     
@@ -168,6 +167,9 @@ public class CarData : MonoBehaviour
                 int A = Convert.ToInt32(bytes[2], 16);
                 int B = Convert.ToInt32(bytes[3], 16);
                 rpm = ((A * 256) + B) / 4;
+                CarMath.totalrpm += rpm;
+                CarMath.rpmcount++;
+                
                 Debug.Log("Engine RPM: " + rpm);
                 if (!ranonceloop)
                 {
@@ -195,6 +197,7 @@ public class CarData : MonoBehaviour
             {
                 int kmh = Convert.ToInt32(bytes[2], 16);
                 mph = Convert.ToInt32(kmh * 0.621371);
+                
                 Debug.Log("🏎 Speed: " + mph + " mph");
                 if (!ranonceloop2)
                 {

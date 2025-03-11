@@ -126,8 +126,9 @@ public class Initialize : MonoBehaviour
 
     public void obd()
     {
-    
-        
+        obdchecked =true;
+        StartCoroutine(ActivateOBD());
+        /*
         if (CarData.ObdChecked && CarData.ObdFound)
         {
             obdchecked =true;
@@ -140,6 +141,7 @@ public class Initialize : MonoBehaviour
             StartCoroutine(ActivateOBD());
 
         }
+        */
         
 
     }
@@ -147,7 +149,9 @@ public class Initialize : MonoBehaviour
     public void ecu()
     {
         
-       
+        ecuchecked = true;
+        StartCoroutine(ActivateECU());
+       /*
         if (CarData.EcuData && CarData.EcuCheck)
         {
             ecuchecked = true;
@@ -160,7 +164,7 @@ public class Initialize : MonoBehaviour
             ecuchecked = false;
             StartCoroutine(ActivateECU());
         }
-       
+       */
         
 
     }
