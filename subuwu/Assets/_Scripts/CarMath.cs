@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class CarMath : MonoBehaviour
 {
     public static int totalrpm;
@@ -10,7 +11,9 @@ public class CarMath : MonoBehaviour
     public static int totalmph;
     public static int rpmMph;
     public static int mphcount;
+    public static int gear;
     public static float gearRatio;
+    
     void Update()
     {
         if (CarData.BothActive)
@@ -38,5 +41,21 @@ public class CarMath : MonoBehaviour
         float wheelrpm = wheelspeed / circumference;
         float finaldriveratio = 3.90f;
         gearRatio = (rpm / wheelrpm) / finaldriveratio;
+        float[] gearRatios = { 3.80f, 2.10f, 1.45f, 1.00f, 0.80f, 0.65f };
+        int bestGear = 0;
+        float bestDifference = float.MaxValue;
+        for (int i = 0; i < gearRatios.Length; i++)
+        {
+            float difference = Mathf.Abs(gearRatio - gearRatios[i]);
+            if (difference < bestDifference)
+            {
+                bestDifference = difference;
+                bestGear = i + 1; 
+            }
+        }
+
+        gear = bestGear; 
+    }
+    
     }         
-}
+
