@@ -4,14 +4,15 @@ using UnityEngine;
 
 public class LightColor : MonoBehaviour
 {
-    public List<GameObject> lights = new List<GameObject>(); 
+    public List<SpriteRenderer> lights = new List<SpriteRenderer>();
+    
 
    
     void Start()
     {
         foreach (Transform child in transform)
         {
-           lights.Add(child.gameObject);
+           lights.Add(child.GetComponent<SpriteRenderer>());
         }
 
         
@@ -20,6 +21,12 @@ public class LightColor : MonoBehaviour
     
     void Update()
     {
+        if (CarData.rpm > 4500)
+        {
+            Color newColor = lights[0].GetComponent<SpriteRenderer>().color; 
+            newColor.a = 44f / 100f;    
+            sr.color = newColor;
+        }
         
     }
 }
