@@ -6,27 +6,104 @@ public class LightColor : MonoBehaviour
 {
     public List<SpriteRenderer> lights = new List<SpriteRenderer>();
     
+    public bool green = false;
+    public bool yellow1 = false;
+    public bool yellow2 = false;
+    public bool red = false;
+    private int lastIndex = 0;
+    private Color fullcol;
+    private Color lightcol;
+    
 
    
     void Start()
     {
         foreach (Transform child in transform)
-        {
-           lights.Add(child.GetComponent<SpriteRenderer>());
-        }
+        { 
+            SpriteRenderer sr = child.GetComponent<SpriteRenderer>();
+           lights.Add(sr);
+           Color newColor = sr.color;
+           fullcol.a = 1f;
+           newColor.a = 20f/255f;
+           lightcol.a = 20/255f;
+           sr.color = newColor;
+           lastIndex = lights.Count;
 
+        }
         
     }
 
     
     void Update()
     {
+        ColorHandling();
         if (CarData.rpm > 4500)
         {
-            Color newColor = lights[0].GetComponent<SpriteRenderer>().color; 
-            newColor.a = 44f / 100f;    
-            sr.color = newColor;
+            green = true;
+           
         }
         
     }
+
+    private void ColorHandling()
+    {
+        if (green)
+        {
+            ColorOn(0);
+
+        }
+        else
+        {
+            ColorOff(0);
+           
+            
+        }
+        if (yellow1)
+        {
+            ColorOn(1);
+
+        }
+        else
+        {
+            ColorOff(1);
+           
+            
+        }
+        if (yellow2)
+        {
+            ColorOn(2);
+       
+        }
+        else
+        {
+            ColorOff(2);
+        }
+        if (red)
+        {
+            ColorOn(3);
+        }
+        else
+        {
+            ColorOff(3);
+        }
+        
+    }
+
+    private void ColorOn(int indexnum)
+    {
+        Color newColor = lights[indexnum].color; 
+        newColor.a = fullcol.a;
+        lights[indexnum].color = newColor;
+        lights[lastIndex-indexnum-1].color = newColor;
+    }
+
+    private void ColorOff(int indexnum)
+    {
+        Color newColor = lights[indexnum].color; 
+        newColor.a = lightcol.a;
+        lights[indexnum].color = newColor;
+        lights[lastIndex-indexnum -1].color = newColor;
+    }
+    
+    
 }

@@ -2714,6 +2714,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lights: []
+  green: 0
+  yellow1: 0
+  yellow2: 0
+  red: 0
 --- !u!1 &1049147652
 GameObject:
   m_ObjectHideFlags: 0
