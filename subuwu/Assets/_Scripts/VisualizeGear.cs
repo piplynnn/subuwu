@@ -11,7 +11,16 @@ public class VisualizeGear : MonoBehaviour
     {
         if (textComponent != null)
         {
-            textComponent.text = CarMath.gear.ToString();
+            if (CarMath.gear == 0)
+            {
+                textComponent.text = "N";
+            }
+            else
+            {
+                textComponent.text = CarMath.gear.ToString();
+                
+            }
+           
         }
     }
 }

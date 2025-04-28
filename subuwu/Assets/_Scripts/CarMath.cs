@@ -43,6 +43,11 @@ public class CarMath : MonoBehaviour
         gearRatio = (rpm / wheelrpm) / finaldriveratio;
         float[] gearRatios = { 3.80f, 2.10f, 1.45f, 1.00f, 0.80f, 0.65f };
         int bestGear = 0;
+        if (mph == 0 || (rpm <= 1000 && mph > 5))
+        {
+            gear = 0;
+            return;
+        }
         float bestDifference = float.MaxValue;
         for (int i = 0; i < gearRatios.Length; i++)
         {
