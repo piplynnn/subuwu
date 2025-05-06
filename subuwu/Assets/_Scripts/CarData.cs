@@ -23,6 +23,8 @@ public class CarData : MonoBehaviour
     public static bool EcuCheck;
     public static int rpm;
     public static int mph;
+
+    public static int throttleper;
     
     public string portName = "COM3"; // Change this based on your OBD-II adapter
     public int baudRate = 115200; // Try 9600, 38400, or 115200 if needed
@@ -138,6 +140,11 @@ public class CarData : MonoBehaviour
 		{
     		SendCommand("010D");
 		}
+
+        if (Time.frameCount % 8 == 0 && BothActive)
+        {
+            SendCommand("0111");
+        }
 		else if (Time.frameCount % 6 == 0 && BothActive)
 		{
     		SendCommand("010C");
@@ -207,6 +214,11 @@ public class CarData : MonoBehaviour
                 }
                 
                 
+            }
+            else if (bytes[0] == "01" && bytes[1] == "11")
+            {
+                int throttle = Convert.ToInt32(bytes[2], 16);
+                throttleper = (throttle * 100) / 255;
             }
         }
     
