@@ -222,8 +222,11 @@ public class CarData : MonoBehaviour
             else if (bytes[0] == "41" && bytes[1] == "4A")
             {
 				
-                 int rawThrottle = Convert.ToInt32(bytes[2], 16);
-        		float pedalPercent = Mathf.Clamp01(rawThrottle / 153f) * 100f;
+        		int rawPedal = Convert.ToInt32(bytes[2], 16);
+        		int minRaw = 21;   // value at 0% pedal (idle)
+        		int maxRaw = 153;  // value at 100% pedal (WOT)
+        		rawPedal = Mathf.Clamp(rawPedal, minRaw, maxRaw);
+        		float pedalPercent = ((rawPedal - minRaw) / (float)(maxRaw - minRaw)) * 100f;
 				throttleper = pedalPercent;
 				Debug.Log("Throttle =" + throttleper);
             }
