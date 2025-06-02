@@ -11,7 +11,7 @@ public class AccelerationBar : MonoBehaviour
 
     void Update()
     {
-        normalizedAccel = Mathf.Clamp01((maxaccel - currentaccel) / maxaccel);
+        normalizedAccel = Mathf.Clamp01((maxaccel - throttle) / maxaccel);
         accelBarFill.fillAmount = normalizedAccel;
         accelBarFill.color = Color.black;
     }
