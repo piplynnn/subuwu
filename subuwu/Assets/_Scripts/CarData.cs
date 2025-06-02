@@ -23,6 +23,7 @@ public class CarData : MonoBehaviour
     public static bool EcuCheck;
     public static int rpm;
     public static int mph;
+
     public static float throttleper;
     
     public string portName = "COM3"; // Change this based on your OBD-II adapter
@@ -218,20 +219,17 @@ public class CarData : MonoBehaviour
                 
                 
             }
-		else if (bytes[0] == "41" && bytes[1] == "11") // Absolute Throttle Position
-		{
-    		if (bytes.Length >= 3)
-    		{		
-        		int rawThrottle = Convert.ToInt32(bytes[2], 16);
-       		 	float throttlePercent = (rawThrottle * 100f) / 255f;
-        		CarData.throttleper = throttlePercent;
-
-        		Debug.Log("🔧 Throttle = " + throttlePercent.ToString("F1") + "%");
-    		}
-		}
-	}
-}
-
+            else if (bytes[0] == "41" && bytes[1] == "4A")
+            {
+				
+                 int rawThrottle = Convert.ToInt32(bytes[2], 16);
+        		float pedalPercent = Mathf.Clamp01(rawThrottle / 153f) * 100f;
+				throttleper = pedalPercent;
+				Debug.Log("Throttle =" + throttleper);
+            }
+        }
+ 
+    }
 
     void OnApplicationQuit()
     {

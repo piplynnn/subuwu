@@ -2880,7 +2880,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   accelBarFill: {fileID: 979561668}
-  maxaccel: 78
+  maxaccel: 100
   normalizedAccel: 0
   currentaccel: 0
 --- !u!114 &979561668
