@@ -47,7 +47,7 @@ public class CarData : MonoBehaviour
             };
 
             serialPort.Open();
-            Debug.Log("✅ Connected to OBD-II on " + portName);
+            Debug.Log("Connected to OBD-II on " + portName);
 
             // Run OBD-II initialization
             InitializeOBD();
@@ -61,7 +61,7 @@ public class CarData : MonoBehaviour
         }
         catch (Exception e)
         {
-            Debug.LogError("❌ Failed to connect to OBD-II: " + e.Message);
+            Debug.LogError("Failed to connect to OBD-II: " + e.Message);
             ObdChecked = true;
             ObdFound = false;
         }
@@ -85,7 +85,7 @@ public class CarData : MonoBehaviour
         if (serialPort != null && serialPort.IsOpen)
         {
             serialPort.Write(command + "\r"); // Ensure proper termination
-            //Debug.Log("📤 Sent: " + command);
+            //Debug.Log("Sent: " + command);
             Thread.Sleep(10); // Allow ECU time to process request
         }
     }

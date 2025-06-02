@@ -37,10 +37,40 @@ public class LightColor : MonoBehaviour
     void Update()
     {
         ColorHandling();
-        if (CarData.rpm > 4500)
+        if (CarData.rpm > 4000)
         {
             green = true;
+        }
+        else
+        {
+            green = false;
+        }
+        if (CarData.rpm > 4500)
+        {
+            yellow1 = true;
            
+        }
+        else
+        {
+            yellow1 = false;
+        }
+        if (CarData.rpm > 5000)
+        {
+            yellow2 = true;
+           
+        }
+        else
+        {
+            yellow2 = false;
+        }
+        if (CarData.rpm > 5000)
+        {
+            red = true;
+           
+        }
+        else
+        {
+            red = false;
         }
         
     }
