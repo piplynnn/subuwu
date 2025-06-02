@@ -223,7 +223,7 @@ public class CarData : MonoBehaviour
             {
 				
         		int rawPedal = Convert.ToInt32(bytes[2], 16);
-        		int minRaw = 9;   // value at 0% pedal (idle)
+        		int minRaw = 30;   // value at 0% pedal (idle)
         		int maxRaw = 153;  // value at 100% pedal (WOT)
         		rawPedal = Mathf.Clamp(rawPedal, minRaw, maxRaw);
         		float pedalPercent = ((rawPedal - minRaw) / (float)(maxRaw - minRaw)) * 100f;
