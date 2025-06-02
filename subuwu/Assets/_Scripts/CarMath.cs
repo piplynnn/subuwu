@@ -19,12 +19,13 @@ public class CarMath : MonoBehaviour
         if (CarData.BothActive)
         {
             
-            Averages();
+            //Averages();
             GearCalc();
 
         }
 
     }
+
 
     public void Averages()
     {
