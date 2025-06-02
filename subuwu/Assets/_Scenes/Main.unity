@@ -2536,7 +2536,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8088f4fb5068242018e756f67152932e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  textComponent: {fileID: 0}
+  textComponent: {fileID: 889676084}
 --- !u!114 &889676084
 MonoBehaviour:
   m_ObjectHideFlags: 0
