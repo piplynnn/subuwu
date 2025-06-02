@@ -217,8 +217,10 @@ public class CarData : MonoBehaviour
             }
             else if (bytes[0] == "01" && bytes[1] == "11")
             {
+				
                 int throttle = Convert.ToInt32(bytes[2], 16);
                 throttleper = (throttle * 100) / 255;
+				Debug.Log("Throttle =" + throttleper);
             }
         }
     
