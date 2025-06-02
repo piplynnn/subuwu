@@ -23,7 +23,6 @@ public class CarData : MonoBehaviour
     public static bool EcuCheck;
     public static int rpm;
     public static int mph;
-
     public static int throttleper;
     
     public string portName = "COM3"; // Change this based on your OBD-II adapter
