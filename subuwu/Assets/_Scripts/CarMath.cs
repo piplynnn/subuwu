@@ -46,6 +46,7 @@ public class CarMath : MonoBehaviour
         if (mph == 0 || (rpm <= 1000 && mph > 5))
         {
             gear = 0;
+			Debug.Log("Gear = " + gear);
             return;
         }
         float bestDifference = float.MaxValue;
