@@ -59,7 +59,9 @@ public class CarMath : MonoBehaviour
             }
         }
 
+
         gear = bestGear; 
+		Debug.Log("Gear = " + gear);
     }
     
     }         
