@@ -37,7 +37,7 @@ public class LightColor : MonoBehaviour
     void Update()
     {
         ColorHandling();
-        if (CarData.rpm > 4000)
+        if (CarData.rpm > 4250)
         {
             green = true;
         }
@@ -45,7 +45,7 @@ public class LightColor : MonoBehaviour
         {
             green = false;
         }
-        if (CarData.rpm > 4500)
+        if (CarData.rpm > 4750)
         {
             yellow1 = true;
            
@@ -54,7 +54,7 @@ public class LightColor : MonoBehaviour
         {
             yellow1 = false;
         }
-        if (CarData.rpm > 5000)
+        if (CarData.rpm > 5250)
         {
             yellow2 = true;
            
@@ -63,7 +63,7 @@ public class LightColor : MonoBehaviour
         {
             yellow2 = false;
         }
-        if (CarData.rpm > 5000)
+        if (CarData.rpm > 6000)
         {
             red = true;
            
