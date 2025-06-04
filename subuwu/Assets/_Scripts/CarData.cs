@@ -49,9 +49,6 @@ public class CarData : MonoBehaviour
             serialPort.Open();
             Debug.Log("Connected to OBD-II on " + portName);
 
-            // Run OBD-II initialization
-            //InitializeOBD();
-
             // Start the background thread for reading data
             serialThread = new Thread(ReadSerial);
             serialThread.IsBackground = true;
@@ -67,25 +64,14 @@ public class CarData : MonoBehaviour
         }
     }
 
-    private void InitializeOBD()
-    {
-        SendCommand("ATZ");   // Reset ELM327
-        Thread.Sleep(1000);   // Wait for reset
-        SendCommand("ATE0");  // Turn off echo (prevents duplicate input)
-        Thread.Sleep(500);
-        SendCommand("ATSP0"); // Auto-detect OBD-II protocol
-        Thread.Sleep(500);
-        SendCommand("ATST 64"); // Increase Timeout (Prevents "SEARCHING..." from cutting off)
-        Thread.Sleep(500);
-        Debug.Log("✅ OBD-II Adapter Initialized.");
-    }
+
 
     private void SendCommand(string command)
     {
         if (serialPort != null && serialPort.IsOpen)
         {
             serialPort.Write(command + "\r"); // Ensure proper termination
-            Thread.Sleep(10); // Allow ECU time to process request
+            //Thread.Sleep(10); // Allow ECU time to process request
         }
     }
 
@@ -135,10 +121,11 @@ public class CarData : MonoBehaviour
             ranonce2 = true;
         }
 		
- 		if (Time.frameCount % 10 == 0 && BothActive)
+ 		if (Time.frameCount % 1 == 0 && BothActive)
 		{
     		SendCommand("010D");
 		}
+		/*
 		
 
         if (Time.frameCount % 8 == 0 && BothActive)
@@ -151,6 +138,7 @@ public class CarData : MonoBehaviour
 		{
     		SendCommand("010C");
 		}
+		*/
 	
 
     
