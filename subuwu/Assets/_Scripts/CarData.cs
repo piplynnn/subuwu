@@ -50,7 +50,7 @@ public class CarData : MonoBehaviour
             Debug.Log("Connected to OBD-II on " + portName);
 
             // Run OBD-II initialization
-            InitializeOBD();
+            //InitializeOBD();
 
             // Start the background thread for reading data
             serialThread = new Thread(ReadSerial);
