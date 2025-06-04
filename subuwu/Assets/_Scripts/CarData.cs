@@ -85,7 +85,6 @@ public class CarData : MonoBehaviour
         if (serialPort != null && serialPort.IsOpen)
         {
             serialPort.Write(command + "\r"); // Ensure proper termination
-            //Debug.Log("Sent: " + command);
             Thread.Sleep(10); // Allow ECU time to process request
         }
     }
@@ -122,7 +121,7 @@ public class CarData : MonoBehaviour
             }
         }
 
-        // Example: Continuously request RPM and Speed in Unity
+        
         if (Time.frameCount % 600 == 0 && !ranonce) {
             
             SendCommand("010C"); // Request RPM
@@ -165,8 +164,6 @@ public class CarData : MonoBehaviour
             Debug.LogWarning(response);
             return;
         }
-
-        //Debug.Log("📥 Raw Response: " + response);
 
         string[] bytes = response.Split(' ');
         
