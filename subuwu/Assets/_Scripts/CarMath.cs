@@ -42,7 +42,7 @@ public class CarMath : MonoBehaviour
         float wheelrpm = wheelspeed / circumference;
         float finaldriveratio = 3.90f;
         gearRatio = (rpm / wheelrpm) / finaldriveratio;
-        float[] gearRatios = { 3.80f, 2.10f, 1.45f, 1.00f, 0.80f, 0.65f };
+        float[] gearRatios = { 3.636f, 2.235f, 1.590f, 1.137f, 0.971f, 0.756f };
         int bestGear = 0;
         if (mph == 0 || (rpm <= 1000 && mph > 5))
         {
