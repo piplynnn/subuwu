@@ -121,11 +121,11 @@ public class CarData : MonoBehaviour
             ranonce2 = true;
         }
 		
- 		if (Time.frameCount % 6 == 0 && BothActive)
+ 		if (Time.frameCount % 10 == 0 && BothActive)
 		{
     		SendCommand("014A");
 		}
-		/*
+		
 		
 
         if (Time.frameCount % 8 == 0 && BothActive)
@@ -138,7 +138,7 @@ public class CarData : MonoBehaviour
 		{
     		SendCommand("010C");
 		}
-		*/
+		
 	
 
     
