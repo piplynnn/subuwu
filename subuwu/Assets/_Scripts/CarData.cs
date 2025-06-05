@@ -23,6 +23,7 @@ public class CarData : MonoBehaviour
     public static bool EcuCheck;
     public static int rpm;
     public static int mph;
+    public int commandIndex;
 
     public static float throttleper;
     
@@ -31,6 +32,7 @@ public class CarData : MonoBehaviour
 
     private Queue<string> dataQueue = new Queue<string>();
     private readonly object queueLock = new object();
+    private string[] MainCommands;
 
     void Start()
     {
@@ -62,11 +64,25 @@ public class CarData : MonoBehaviour
             ObdChecked = true;
             ObdFound = false;
         }
+
+        MainCommands = new string [] {"010C", "010D" , "014A"};
+        commandIndex = 0;
     }
 
 
 
-    private void SendCommand(string command)
+    private void SendCommand()
+    {
+        string command = MainCommands[commandIndex];
+        serialPort.Write(command + "\r"); 
+        commandIndex++;
+        if (commandIndex >= MainCommands.Length)
+        {
+            commandIndex = 0;
+        }
+    }
+
+    private void SendInitCommand(string command)
     {
         if (serialPort != null && serialPort.IsOpen)
         {
@@ -110,33 +126,20 @@ public class CarData : MonoBehaviour
         
         if (Time.frameCount % 600 == 0 && !ranonce) {
             
-            SendCommand("010C"); // Request RPM
+            SendInitCommand("010C"); // Request RPM
             ranonce = true;
             
         }
 
         else if (Time.frameCount % 600 == 0 && !ranonce2 && timecheck)
         {
-            SendCommand("010D");
+            SendInitCommand("010D");
             ranonce2 = true;
         }
 		
- 		if (Time.frameCount % 6 == 0 && BothActive)
+ 		if (Time.frameCount % 3 == 0 && BothActive)
 		{
-    		SendCommand("010C");
-		}
-		
-		
-
-        if (Time.frameCount % 8 == 0 && BothActive)
-        {
-            SendCommand("014A");
-			
-        }
-		
-		else if (Time.frameCount % 10 == 0 && BothActive)
-		{
-    		SendCommand("010D");
+    		SendCommand();
 		}
     
     }
@@ -215,6 +218,7 @@ public class CarData : MonoBehaviour
         }
  
     }
+    
 
     void OnApplicationQuit()
     {
