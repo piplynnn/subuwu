@@ -114,7 +114,7 @@ public class LightColor : MonoBehaviour
         }
         else
         {
-            ColorOff(3);
+            ColorOff(3); 
         }
         
     }
