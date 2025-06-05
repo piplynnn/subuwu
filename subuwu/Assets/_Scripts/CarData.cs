@@ -123,7 +123,7 @@ public class CarData : MonoBehaviour
 		
  		if (Time.frameCount % 6 == 0 && BothActive)
 		{
-    		SendCommand("014A");
+    		SendCommand("010C");
 		}
 		
 		
@@ -134,13 +134,10 @@ public class CarData : MonoBehaviour
 			
         }
 		
-		else if (Time.frameCount % 6 == 0 && BothActive)
+		else if (Time.frameCount % 10== 0 && BothActive)
 		{
-    		SendCommand("010C");
+    		SendCommand("010D");
 		}
-		
-	
-
     
     }
 
