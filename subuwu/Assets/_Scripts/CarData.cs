@@ -137,7 +137,7 @@ public class CarData : MonoBehaviour
             ranonce2 = true;
         }
 		
- 		if (Time.frameCount % 3 == 0 && BothActive)
+ 		if (Time.frameCount % 2 == 0 && BothActive)
 		{
     		SendCommand();
 		}
