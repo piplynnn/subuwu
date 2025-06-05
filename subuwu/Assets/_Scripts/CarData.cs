@@ -65,7 +65,7 @@ public class CarData : MonoBehaviour
             ObdFound = false;
         }
 
-        MainCommands = new string [] {"010C", "014A", "010D"};
+        MainCommands = new string [] {"010C", "014A"};
         commandIndex = 0;
     }
 
