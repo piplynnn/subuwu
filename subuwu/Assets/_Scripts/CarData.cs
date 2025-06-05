@@ -96,102 +96,128 @@ public class CarData : MonoBehaviour
         }
     }
 
-void Update()
-{
-    lock (queueLock)
+    void Update()
     {
-        while (dataQueue.Count > 0)
+        lock (queueLock)
         {
-            string data = dataQueue.Dequeue();
-            ProcessOBDData(data);
-        }
-    }
-
-    // Initial single request for RPM + Speed
-    if (Time.frameCount % 600 == 0 && !ranonce)
-    {
-        SendCommand("010C0D"); // Request RPM and Speed at the same time
-        ranonce = true;
-    }
-
-    // Once RPM is verified, send again for confirmation
-    else if (Time.frameCount % 600 == 0 && !ranonce2 && timecheck)
-    {
-        SendCommand("010C0D"); // Repeat RPM and Speed once car is confirmed on
-        ranonce2 = true;
-    }
-
-    // Active polling for throttle and rpm/speed
-    if (Time.frameCount % 6 == 0 && BothActive)
-    {
-        SendCommand("010C0D"); // Get RPM and Speed
-    }
-
-    if (Time.frameCount % 10 == 0 && BothActive)
-    {
-        SendCommand("014A"); // Get Throttle Position separately
-    }
-}
-
-private void ProcessOBDData(string response)
-{
-    // Ignore bad responses
-    if (response.Contains("SEARCHING") || response.Contains("?"))
-    {
-        Debug.LogWarning(response);
-        return;
-    }
-
-    string[] bytes = response.Split(' ');
-
-    for (int i = 0; i < bytes.Length - 1; i++)
-    {
-        if (bytes[i] == "41")
-        {
-            string pid = bytes[i + 1];
-
-            if (pid == "0C" && i + 3 < bytes.Length) // RPM
+            while (dataQueue.Count > 0)
             {
-                int A = Convert.ToInt32(bytes[i + 2], 16);
-                int B = Convert.ToInt32(bytes[i + 3], 16);
+                string data = dataQueue.Dequeue();
+                ProcessOBDData(data);
+            }
+        }
+
+        
+        if (Time.frameCount % 600 == 0 && !ranonce) {
+            
+            SendCommand("010C"); // Request RPM
+            ranonce = true;
+            
+        }
+
+        else if (Time.frameCount % 600 == 0 && !ranonce2 && timecheck)
+        {
+            SendCommand("010D");
+            ranonce2 = true;
+        }
+		
+ 		if (Time.frameCount % 6 == 0 && BothActive)
+		{
+    		SendCommand("014A");
+		}
+		
+		
+
+        if (Time.frameCount % 8 == 0 && BothActive)
+        {
+            SendCommand("014A");
+			
+        }
+		
+		else if (Time.frameCount % 6 == 0 && BothActive)
+		{
+    		SendCommand("010C");
+		}
+		
+	
+
+    
+    }
+
+    private void ProcessOBDData(string response)
+    {
+        // Ignore "SEARCHING..." responses
+        if (response.Contains("SEARCHING") || response.Contains("?"))
+        {
+            Debug.LogWarning(response);
+            return;
+        }
+
+        string[] bytes = response.Split(' ');
+        
+
+        if (bytes.Length >= 2)
+        {
+            if (bytes[0] == "41" && bytes[1] == "0C") // RPM
+            {
+                int A = Convert.ToInt32(bytes[2], 16);
+                int B = Convert.ToInt32(bytes[3], 16);
                 rpm = ((A * 256) + B) / 4;
                 CarMath.totalrpm += rpm;
                 CarMath.rpmcount++;
+                
                 Debug.Log("Engine RPM: " + rpm);
-
                 if (!ranonceloop)
                 {
-                    EcuData = rpm > 0;
-                    EcuCheck = true;
+                    int initrpm = rpm;
+                    if (initrpm > 0)
+                    {
+                        EcuData = true;
+                        EcuCheck = true;
+
+                    }
+
+                    else
+                    {
+                        EcuData = false;
+                        EcuCheck = true;
+                    }
+                   
                     timecheck = true;
                     ranonceloop = true;
                 }
+                
+                
             }
-            else if (pid == "0D" && i + 2 < bytes.Length) // Speed
+            else if (bytes[0] == "41" && bytes[1] == "0D") // Speed
             {
-                int kmh = Convert.ToInt32(bytes[i + 2], 16);
-                mph = Mathf.RoundToInt(kmh * 0.621371f);
+                int kmh = Convert.ToInt32(bytes[2], 16);
+                mph = Convert.ToInt32(kmh * 0.621371);
+                
                 Debug.Log("🏎 Speed: " + mph + " mph");
-
                 if (!ranonceloop2)
                 {
                     BothActive = true;
                     ranonceloop2 = true;
+                    
                 }
+                
+                
             }
-            else if (pid == "4A" && i + 2 < bytes.Length) // Throttle
+            else if (bytes[0] == "41" && bytes[1] == "4A")
             {
-                int rawPedal = Convert.ToInt32(bytes[i + 2], 16);
-                int minRaw = 30;
-                int maxRaw = 153;
-                rawPedal = Mathf.Clamp(rawPedal, minRaw, maxRaw);
-                float pedalPercent = ((rawPedal - minRaw) / (float)(maxRaw - minRaw)) * 100f;
-                throttleper = pedalPercent;
-                Debug.Log("Throttle = " + throttleper);
+				
+        		int rawPedal = Convert.ToInt32(bytes[2], 16);
+        		int minRaw = 30;   // value at 0% pedal (idle)
+        		int maxRaw = 153;  // value at 100% pedal (WOT)
+        		rawPedal = Mathf.Clamp(rawPedal, minRaw, maxRaw);
+        		float pedalPercent = ((rawPedal - minRaw) / (float)(maxRaw - minRaw)) * 100f;
+				throttleper = pedalPercent;
+				Debug.Log("Throttle =" + throttleper);
             }
         }
+ 
     }
-}
 
     void OnApplicationQuit()
     {
