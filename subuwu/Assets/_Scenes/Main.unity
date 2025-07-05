@@ -948,12 +948,12 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 169364804}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 545968665}
+  m_Father: {fileID: 1506832082}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -2323,7 +2323,6 @@ RectTransform:
   - {fileID: 1726022627}
   - {fileID: 1620408726}
   - {fileID: 277912885}
-  - {fileID: 169364805}
   m_Father: {fileID: 1506832082}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -2381,8 +2380,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcf8e8e142d0c9245b0812f3ee66c452, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startbutton: 0
   lights: []
+  start: 0
+  red: 0
+  yellow: 0
+  green: 0
 --- !u!1 &590326133
 GameObject:
   m_ObjectHideFlags: 0
@@ -4759,6 +4761,7 @@ RectTransform:
   - {fileID: 176834886}
   - {fileID: 545968665}
   - {fileID: 1691531113}
+  - {fileID: 169364805}
   m_Father: {fileID: 2000212533}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -5511,15 +5514,15 @@ PrefabInstance:
       objectReference: {fileID: 21300000, guid: 5c64be600ff8e46fc87d618bd7f9bd02, type: 3}
     - target: {fileID: 2451916874324821152, guid: db0f3930925e6284fa32139489f954e3, type: 3}
       propertyPath: m_Color.b
-      value: 0.16470589
+      value: 0.08627451
       objectReference: {fileID: 0}
     - target: {fileID: 2451916874324821152, guid: db0f3930925e6284fa32139489f954e3, type: 3}
       propertyPath: m_Color.g
-      value: 0.8
+      value: 0.10980393
       objectReference: {fileID: 0}
     - target: {fileID: 2451916874324821152, guid: db0f3930925e6284fa32139489f954e3, type: 3}
       propertyPath: m_Color.r
-      value: 0.15686275
+      value: 0.91372555
       objectReference: {fileID: 0}
     - target: {fileID: 3114048828590976788, guid: db0f3930925e6284fa32139489f954e3, type: 3}
       propertyPath: m_LocalScale.x
@@ -6292,15 +6295,15 @@ PrefabInstance:
       objectReference: {fileID: 21300000, guid: 5c64be600ff8e46fc87d618bd7f9bd02, type: 3}
     - target: {fileID: 2451916874324821152, guid: db0f3930925e6284fa32139489f954e3, type: 3}
       propertyPath: m_Color.b
-      value: 0.14117648
+      value: 0.16470589
       objectReference: {fileID: 0}
     - target: {fileID: 2451916874324821152, guid: db0f3930925e6284fa32139489f954e3, type: 3}
       propertyPath: m_Color.g
-      value: 0.15686275
+      value: 0.8000001
       objectReference: {fileID: 0}
     - target: {fileID: 2451916874324821152, guid: db0f3930925e6284fa32139489f954e3, type: 3}
       propertyPath: m_Color.r
-      value: 0.8980392
+      value: 0.14901961
       objectReference: {fileID: 0}
     - target: {fileID: 3114048828590976788, guid: db0f3930925e6284fa32139489f954e3, type: 3}
       propertyPath: m_LocalScale.x
