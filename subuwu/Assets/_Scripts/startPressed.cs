@@ -9,7 +9,14 @@ public class startPressed : MonoBehaviour
 
     public void startpress()
     {
-        startpressed = true;
+        if (!startpressed)
+        {
+            startpressed = true;
+        }
+        else
+        {
+            startpressed = false;
+        }
     }
 
     private void Update()

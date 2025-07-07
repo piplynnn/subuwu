@@ -37,14 +37,21 @@ public class zerotosixty : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (green)
+        {
+            if (CarData.mph <= 60)
+            {
+                
+            }
+        }
         if (startPressed.startpressed)
         {
-           start = true;
-           if (start)
-           {
-               StartSequence();
-           }
+            StartSequence();
+        }
 
+        if (!startPressed.startpressed)
+        {
+            //StopSequence();
         }
     }
 
@@ -53,19 +60,47 @@ public class zerotosixty : MonoBehaviour
         StartCoroutine(TimerCoroutine(() => red = true));
         if (red)
         {
+            ColorOn(0);
             StartCoroutine(TimerCoroutine(() => yellow = true));
         }
 
         if (yellow)
         {
+            ColorOn(1);
             StartCoroutine(TimerCoroutine(() => green = true));
         }
+
+        if (green)
+        {
+            ColorOn(2);
+        }
+    }
+
+    private void StopSequence()
+    {
+        ColorOff(0);
+        ColorOff(1);
+        ColorOff(2);
     }
 
     IEnumerator TimerCoroutine(Action light)
     {
         yield return new WaitForSeconds(1.0f);
         light();
+    }
+    private void ColorOn(int indexnum)
+    {
+        Color newColor = lights[indexnum].color; 
+        newColor.a = fullcol.a;
+        lights[indexnum].color = newColor;
+        lights[lastIndex-indexnum -1].color = newColor;
+    }
+    private void ColorOff(int indexnum)
+    {
+        Color newColor = lights[indexnum].color; 
+        newColor.a = lightcol.a;
+        lights[indexnum].color = newColor;
+        lights[lastIndex-indexnum -1].color = newColor;
     }
 }
 
