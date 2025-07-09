@@ -91,6 +91,8 @@ public class zerotosixty : MonoBehaviour
        
         StopCoroutine(lightRoutine);
         started = false;
+        is_data_colecting = false;
+        isTiming = false;
         red = yellow = green = false;
         stopranonce = true;
         for (int i = 0; i < 3; i++)
@@ -127,7 +129,7 @@ public class zerotosixty : MonoBehaviour
             is_data_colecting = true;
             totalRPM = zerotosixtyRPMtotal / zerotosixtyRPMcount;
         }
-        else
+        else 
         {
             is_data_colecting = false;
             isTiming = false;
