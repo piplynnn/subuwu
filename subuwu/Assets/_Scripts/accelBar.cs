@@ -11,8 +11,12 @@ public class AccelerationBar : MonoBehaviour
 
     void Update()
     {
-        normalizedAccel = ((maxaccel - CarData.throttleper) / maxaccel);
-        accelBarFill.fillAmount = normalizedAccel;
-        accelBarFill.color = Color.black;
+        if (CamMovement.screennum == -1)
+        {
+            normalizedAccel = ((maxaccel - CarData.throttleper) / maxaccel);
+            accelBarFill.fillAmount = normalizedAccel;
+            accelBarFill.color = Color.black;
+        }
+
     }
 }
