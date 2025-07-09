@@ -165,6 +165,11 @@ public class CarData : MonoBehaviour
                 rpm = ((A * 256) + B) / 4;
                 CarMath.totalrpm += rpm;
                 CarMath.rpmcount++;
+                if (zerotosixty.is_data_colecting)
+                {
+                    zerotosixty.zerotosixtyRPMtotal += rpm;
+                    zerotosixty.zerotosixtyRPMcount++;
+                }
                 
                 Debug.Log("Engine RPM: " + rpm);
                 if (!ranonceloop)

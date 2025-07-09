@@ -9,15 +9,20 @@ public class zerotosixty : MonoBehaviour
     public List<SpriteRenderer> lights = new List<SpriteRenderer>();
     private int lastIndex = 0;
     public TextMeshProUGUI timerText;
+    public TextMeshProUGUI startText;
 
     private Color fullcol = new Color(1f, 1f, 1f, 1f); // Full alpha white
     private Color lightcol = new Color(1f, 1f, 1f, 80f / 255f); // Dim white
     private float timer;
+    public float totalRPM;
     public bool isTiming = false;
     public bool red, yellow, green;
     public bool stopranonce = false;
     public bool started = false;
-
+    public static bool is_data_colecting;
+    public static float zerotosixtyRPMtotal = 0;
+    public static float zerotosixtyRPMcount = 1;
+    
     private Coroutine lightRoutine;
 
     void Start()
@@ -42,12 +47,14 @@ public class zerotosixty : MonoBehaviour
             started = true;
             timer = 0f;
             timerText.text = "00.00";
+            startText.text = "Stop";
             lightRoutine = StartCoroutine(StartSequence());
         }
 
-        if (!startPressed.startpressed && started)
+        if (!startPressed.startpressed && started )
         {
             StopSequence();
+            startText.text = "Start";
         }
         if (isTiming)
         {
@@ -79,20 +86,15 @@ public class zerotosixty : MonoBehaviour
     }
 
     private void StopSequence()
+    //stop sequence isnt used to stop data, but rather reset everything back to normal.
     {
-        if (lightRoutine != null)
-        {
-            StopCoroutine(lightRoutine);
-        }
-
+       
+        StopCoroutine(lightRoutine);
         started = false;
         red = yellow = green = false;
         stopranonce = true;
-        isTiming = false;
-
         for (int i = 0; i < 3; i++)
             ColorOff(i);
-        
     }
 
     private void ColorOn(int indexnum)
@@ -121,13 +123,21 @@ public class zerotosixty : MonoBehaviour
     {
         if (CarData.mph <= 60)
         {
-          
             isTiming = true;
+            is_data_colecting = true;
+            totalRPM = zerotosixtyRPMtotal / zerotosixtyRPMcount;
         }
         else
         {
-            startPressed.startpressed = false;
+            is_data_colecting = false;
+            isTiming = false;
+            DisplayData();
         }
+        
+    }
+
+    private void DisplayData()
+    {
         
     }
 }

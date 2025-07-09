@@ -2382,6 +2382,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lights: []
   timerText: {fileID: 169364806}
+  startText: {fileID: 2124789843}
+  totalRPM: 0
   isTiming: 0
   red: 0
   yellow: 0
