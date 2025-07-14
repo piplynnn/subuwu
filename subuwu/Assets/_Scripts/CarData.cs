@@ -9,10 +9,8 @@ public class CarData : MonoBehaviour
     private SerialPort serialPort;
     private Thread serialThread;
     private bool keepReading = true;
-    
     public bool timecheck = false;
     public static bool BothActive  = false;
-    
     public bool ranonce = false;
     public bool ranonce2 = false;
     public bool ranonceloop = false;
@@ -24,9 +22,7 @@ public class CarData : MonoBehaviour
     public static int rpm;
     public static int mph;
     public int commandIndex;
-
     public static float throttleper;
-    
     public string portName = "COM3"; // Change this based on your OBD-II adapter
     public int baudRate = 115200; // Try 9600, 38400, or 115200 if needed
 

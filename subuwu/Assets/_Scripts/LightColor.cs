@@ -13,9 +13,6 @@ public class LightColor : MonoBehaviour
     private int lastIndex = 0;
     private Color fullcol;
     private Color lightcol;
-    
-
-   
     void Start()
     {
         foreach (Transform child in transform)

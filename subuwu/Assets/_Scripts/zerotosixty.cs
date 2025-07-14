@@ -13,6 +13,10 @@ public class zerotosixty : MonoBehaviour
 
     private Color fullcol = new Color(1f, 1f, 1f, 1f); // Full alpha white
     private Color lightcol = new Color(1f, 1f, 1f, 80f / 255f); // Dim white
+
+    private const int RED = 0;
+    private const int YELLOW = 1;
+    private const int GREEN = 2;
     private float timer;
     public float totalRPM;
     public bool isTiming = false;
@@ -41,7 +45,8 @@ public class zerotosixty : MonoBehaviour
 
     void Update()
     {
-  
+        //add if car gets early start, !Startpressed.Startpressed
+        
         if (startPressed.startpressed && !started)
         {
             started = true;
@@ -69,31 +74,24 @@ public class zerotosixty : MonoBehaviour
 
     private IEnumerator StartSequence()
     {
-        
-        red = true;
-        ColorOn(0);
+        yield return new WaitForSeconds(1.5f);
+        ColorOn(RED);
         yield return new WaitForSeconds(1.0f);
-
-        
-        yellow = true;
-        ColorOn(1);
+        ColorOn(YELLOW);
         yield return new WaitForSeconds(1.0f);
-
-       
         green = true;
-        ColorOn(2);
+        ColorOn(GREEN);
         
     }
 
     private void StopSequence()
     //stop sequence isnt used to stop data, but rather reset everything back to normal.
     {
-       
         StopCoroutine(lightRoutine);
         started = false;
         is_data_colecting = false;
         isTiming = false;
-        red = yellow = green = false;
+        green = false;
         stopranonce = true;
         for (int i = 0; i < 3; i++)
             ColorOff(i);
@@ -123,7 +121,8 @@ public class zerotosixty : MonoBehaviour
 
     private void DataTimerCollect()
     {
-        if (CarData.mph <= 60)
+        //add the time between go and takeoff
+        if (CarData.mph < 60)
         {
             isTiming = true;
             is_data_colecting = true;
