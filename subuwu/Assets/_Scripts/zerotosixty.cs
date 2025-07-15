@@ -13,6 +13,7 @@ public class zerotosixty : MonoBehaviour
     public GameObject zerotosixText;
     public GameObject avgRPMtext;
     public GameObject maxRPMtext;
+    public GameObject launchDelayText;
     public GameObject dataDisplay;
     public GameObject startButton;
     private RectTransform displayrect;
@@ -129,10 +130,17 @@ public class zerotosixty : MonoBehaviour
     private IEnumerator StartSequence()
     {
         yield return new WaitForSeconds(1.5f);
+        SoundManager.Instance.PlaySound(SoundManager.Instance.raceStart);
         ColorOn(RED);
+        
+
         yield return new WaitForSeconds(1.0f);
+        SoundManager.Instance.PlaySound(SoundManager.Instance.raceStart);
         ColorOn(YELLOW);
+        
+        
         yield return new WaitForSeconds(1.0f);
+        SoundManager.Instance.PlaySound(SoundManager.Instance.raceGo);
         green = true;
         ColorOn(GREEN);
 
@@ -146,6 +154,7 @@ public class zerotosixty : MonoBehaviour
         is_data_colecting = false;
         displaySlideBool = false;
         isTiming = false;
+        isSliding = false;
         slideDone = false;
         green = false;
         stopranonce = true;
@@ -212,23 +221,30 @@ public class zerotosixty : MonoBehaviour
     {
         Vector2 movetoPos = new Vector2(newpos.x, rect.anchoredPosition.y);
         Vector2 currentPos = rect.anchoredPosition;
-        if (Vector2.Distance(currentPos, movetoPos) < 1f)
+        float step = speed * Time.deltaTime;
+        float distance = Vector2.Distance(currentPos, movetoPos);
+        if (distance <= step)
         {
-            rect.anchoredPosition = movetoPos;
+            rect.anchoredPosition = movetoPos; 
             text.SetActive(true);
-            return; 
+            return;
         }
         Vector2 direction = (movetoPos - currentPos).normalized;
-        Vector2 newPos = currentPos + direction * speed * Time.deltaTime;
-
-        rect.anchoredPosition = newPos;
+        rect.anchoredPosition = currentPos + direction * step;
         text.SetActive(true);
     }
+
 
     private IEnumerator DataMove()
     {
         RectMoverX(zerotosixText, zerotosixText.GetComponent<RectTransform>(),TextMovePos, textmoveSpeed);
         yield return new WaitForSeconds(0.2f);
+        RectMoverX(avgRPMtext, avgRPMtext.GetComponent<RectTransform>(),TextMovePos, textmoveSpeed);
+        yield return new WaitForSeconds(0.2f);
+        RectMoverX(maxRPMtext, maxRPMtext.GetComponent<RectTransform>(),TextMovePos, textmoveSpeed);
+        yield return new WaitForSeconds(0.2f);
+        RectMoverX(launchDelayText, launchDelayText.GetComponent<RectTransform>(),TextMovePos, textmoveSpeed);
+        
     }
 
 }
