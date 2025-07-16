@@ -6,47 +6,131 @@ using System;
 
 public class zerotosixty : MonoBehaviour
 {
+    
     public List<SpriteRenderer> lights = new List<SpriteRenderer>();
+    
     private int lastIndex = 0;
+    
+    [Header("TMPro textures")]
+    
     public TextMeshProUGUI timerText;
+    
     public TextMeshProUGUI startText;
+    
+    [Header("Display Text Objects")]
     public GameObject zerotosixText;
+    
     public GameObject avgRPMtext;
+    
     public GameObject maxRPMtext;
+    
     public GameObject launchDelayText;
+    
     public GameObject dataDisplay;
+    
     public GameObject startButton;
+    
     private RectTransform displayrect;
-    private Vector2 velocity = new Vector2(300f, 0f); // px/sec
-    private Vector2 currentPosition;
-    private Vector2 endpos = new Vector2(4f, -122f);
-
+    
+    [Header("Colors")]
+    
+    [SerializeField]
+    
     private Color fullcol = new Color(1f, 1f, 1f, 1f); // Full alpha white
+    
+    [SerializeField]
+    
     private Color lightcol = new Color(1f, 1f, 1f, 80f / 255f); // Dim white
 
     private const int RED = 0;
-    private const int YELLOW = 1;
-    private const int GREEN = 2;
-    private static readonly Vector2 TextMovePos = new Vector2(-370f, 60f);
-    public float displaySpeed = 2f;
+    
+    private const int RED2 = 1;
+    
+    private const int RED3 = 2;
+    [Header("Text Locations/Speed")]
+    
+    [SerializeField]
+    
+    private Vector2 DataDisplayBeforePos;
+    
+    [SerializeField]
+    
+    private Vector2 DataDisplayEndPos = new Vector2(4f, -122f);
+    
+    [SerializeField]
+    
+    private Vector2 TextMovePos = new Vector2(-370f, 60f);
+    
+    [SerializeField]
+    
+    private float textmoveSpeed = 20000;
+    
     private float timer;
-    public float textmoveSpeed = 20000;
-    public float avgRPM;
+    
+    [Header("Stat Numbers")]
+    
+    [SerializeField]
+    
+    private float avgRPM;
+    
+    [SerializeField]
+    
+    private float maxRPM;
+    
+    [Header("GameState bools")]
+    
     public bool isTiming = false;
-    public bool red, yellow, green;
-    public bool stopranonce = false;
-    public bool started = false;
-    public bool isDisplayingData = false;
+    
+    [SerializeField]
+    
+    private bool sixtysound = false;
+    
+    [SerializeField]
+    
+    private bool displayingDataRanOnce;
+    
+    [SerializeField]
+    
+    private bool sixtyhit = false;
+    
+    [SerializeField]
+    
+    private bool green;
+    
+    [SerializeField]
+    
+    private bool started = false;
+    
     public bool testbool = false;
-    public bool displaySlideBool = false;
+    
+    [SerializeField]
+    
+    private bool displaySlideBool = false;
+    
     public static bool is_data_colecting;
+    
     public static float zerotosixtyRPMtotal;
+    
     public static float zerotosixtyRPMcount;
+    
+    [Header("Slide Settings")]
+    
+    [SerializeField]
+    
     private bool isSliding = false;
-    public bool slideDone = false;
-    private float slideDuration = 1f; // seconds
+    
+    [SerializeField]
+    
+    private bool slideDone = false;
+    
+    [SerializeField]
+    
+    private float slideDuration = 1f; 
+    
+    [SerializeField]
+    
     private float slideTimer = 0f;
-
+    
     private Coroutine lightRoutine;
 
     void Start()
@@ -63,7 +147,7 @@ public class zerotosixty : MonoBehaviour
         lastIndex = lights.Count;
         timer = 0.0f;
         displayrect = dataDisplay.GetComponent<RectTransform>();
-        currentPosition = displayrect.anchoredPosition;
+        DataDisplayBeforePos = displayrect.anchoredPosition;
     }
 
     void Update()
@@ -84,7 +168,6 @@ public class zerotosixty : MonoBehaviour
         if (!startPressed.startpressed && started)
         {
             StopSequence();
-            DisplayData(); //remove when done testing display data
             startText.text = "Start";
         }
 
@@ -102,7 +185,7 @@ public class zerotosixty : MonoBehaviour
                 slideTimer += Time.deltaTime;
                 float t = Mathf.Clamp01(slideTimer / slideDuration);
                 t = Mathf.SmoothStep(0f, 1f, t);
-                displayrect.anchoredPosition = Lerpers.PositionLerp2d(currentPosition, endpos, t);
+                displayrect.anchoredPosition = Lerpers.PositionLerp2d(DataDisplayBeforePos, DataDisplayEndPos, t);
                 if (t >= 1f)
                 {
                     isSliding = false;
@@ -125,6 +208,7 @@ public class zerotosixty : MonoBehaviour
         {
             DataTimerCollect();
         }
+
     }
 
     private IEnumerator StartSequence()
@@ -136,28 +220,37 @@ public class zerotosixty : MonoBehaviour
 
         yield return new WaitForSeconds(1.0f);
         SoundManager.Instance.PlaySound(SoundManager.Instance.raceStart);
-        ColorOn(YELLOW);
+        ColorOn(RED2);
         
         
         yield return new WaitForSeconds(1.0f);
+        SoundManager.Instance.PlaySound(SoundManager.Instance.raceStart);
+        ColorOn(RED3);
+        yield return new WaitForSeconds(1.0f);
+        AllColorChange(lights, Color.green);
         SoundManager.Instance.PlaySound(SoundManager.Instance.raceGo);
         green = true;
-        ColorOn(GREEN);
+
 
     }
 
-    private void StopSequence()
+    public void StopSequence()
         //stop sequence isnt used to stop data, but rather reset everything back to normal such as timer and lights.
     {
         StopCoroutine(lightRoutine);
         started = false;
         is_data_colecting = false;
         displaySlideBool = false;
+        sixtyhit = false;
         isTiming = false;
         isSliding = false;
         slideDone = false;
+        sixtysound = false;
         green = false;
-        stopranonce = true;
+        displayingDataRanOnce = false;
+        startButton.SetActive(true);
+        dataDisplay.SetActive(false);
+        AllColorChange(lights, Color.red);
         for (int i = 0; i < 3; i++)
             ColorOff(i);
     }
@@ -184,10 +277,22 @@ public class zerotosixty : MonoBehaviour
         }
     }
 
+    private void AllColorChange(List<SpriteRenderer> _lights, Color color)
+    {
+        foreach (SpriteRenderer _light in _lights)
+        {
+            SpriteRenderer sr = _light.GetComponent<SpriteRenderer>();
+            sr.color = color;
+        }
+
+        lastIndex = lights.Count;
+        
+    }
+
     private void DataTimerCollect()
     {
         //add the time between go and takeoff
-        if (CarData.mph < 60 && !testbool)
+        if (CarData.mph < 60 && !testbool && !sixtyhit)
         {
             isTiming = true;
             is_data_colecting = true;
@@ -195,27 +300,41 @@ public class zerotosixty : MonoBehaviour
         }
         else
         {
+            AllColorChange(lights, Color.red);
+            sixtyhit = true;
             is_data_colecting = false;
             isTiming = false;
-            DisplayData();
+            if (!sixtysound)
+            {
+                SoundManager.Instance.PlaySound(SoundManager.Instance.sixty);
+                sixtysound = true;
+            }
+
+            if (!displayingDataRanOnce)
+            {
+                StartCoroutine(DisplayTimer());
+            }
+            
+            
         }
 
     }
 
     private void DisplayData()
     {
-
-        startButton.SetActive(false);
-        dataDisplay.SetActive(true);
+        if (!displayingDataRanOnce)
+        {
+            startButton.SetActive(false);
+            dataDisplay.SetActive(true);
+            displayingDataRanOnce = true;
+        }
+        
         if (!displaySlideBool)
         {
             isSliding = true;
             displaySlideBool = true;
         }
-
-
         
-
     }
     public void RectMoverX(GameObject text, RectTransform rect, Vector2 newpos, float speed)
     {
@@ -244,6 +363,13 @@ public class zerotosixty : MonoBehaviour
         RectMoverX(maxRPMtext, maxRPMtext.GetComponent<RectTransform>(),TextMovePos, textmoveSpeed);
         yield return new WaitForSeconds(0.2f);
         RectMoverX(launchDelayText, launchDelayText.GetComponent<RectTransform>(),TextMovePos, textmoveSpeed);
+        
+    }
+
+    private IEnumerator DisplayTimer()
+    {
+        yield return new WaitForSeconds(2f);
+        DisplayData();
         
     }
 

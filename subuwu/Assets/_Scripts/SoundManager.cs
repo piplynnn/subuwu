@@ -7,7 +7,7 @@ public class SoundManager : MonoBehaviour
     public AudioSource sfxSource;
     public AudioClip raceStart;
     public AudioClip raceGo;
-    public AudioClip successChime;
+    public AudioClip sixty;
     public AudioClip shiftSound;
 
     private void Awake()
