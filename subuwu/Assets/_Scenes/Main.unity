@@ -1888,17 +1888,17 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 343474977}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1460213325}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchoredPosition: {x: -85, y: 0.8719}
+  m_SizeDelta: {x: 504.2264, y: 24.9244}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &343474979
 MonoBehaviour:
@@ -1913,7 +1913,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2178,7 +2178,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -961, y: 130}
+  m_AnchoredPosition: {x: -840, y: 110}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &396324396
@@ -2201,10 +2201,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: AVG RPM =
+  m_text: 'AVG RPM '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7a14833134ad3b5478987a7eb31b1e43, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: -2148209399572141205, guid: 7a14833134ad3b5478987a7eb31b1e43, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2228,8 +2228,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 45
+  m_fontSizeBase: 45
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -2264,10 +2264,10 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 0, y: 0, z: -39.158203, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!222 &396324397
@@ -2592,21 +2592,46 @@ MonoBehaviour:
   lights: []
   timerText: {fileID: 169364806}
   startText: {fileID: 2124789843}
+  dataItems:
+  - position: {x: 0, y: 0}
+    textObject: {fileID: 547962242}
+    hasMoved: 0
+  - position: {x: 0, y: 0}
+    textObject: {fileID: 396324394}
+    hasMoved: 0
+  - position: {x: 0, y: 0}
+    textObject: {fileID: 2118385827}
+    hasMoved: 0
+  - position: {x: 0, y: 0}
+    textObject: {fileID: 1901801077}
+    hasMoved: 0
   zerotosixText: {fileID: 547962242}
   avgRPMtext: {fileID: 396324394}
   maxRPMtext: {fileID: 2118385827}
   launchDelayText: {fileID: 1901801077}
   dataDisplay: {fileID: 1460213324}
   startButton: {fileID: 1691531112}
+  fullcol: {r: 1, g: 1, b: 1, a: 1}
+  lightcol: {r: 1, g: 1, b: 1, a: 0.3137255}
+  DataDisplayBeforePos: {x: 0, y: 0}
+  DataDisplayEndPos: {x: 4, y: -122}
+  TextMovePos: {x: -400, y: 60}
   textmoveSpeed: 2000
   avgRPM: 0
+  maxRPM: 0
   isTiming: 0
+  sixtysound: 0
   displayingDataRanOnce: 0
+  DataMoveRanOnce: 0
+  sixtyhit: 0
   green: 0
   started: 0
   testbool: 0
   displaySlideBool: 0
+  isSliding: 0
   slideDone: 0
+  slideDuration: 1
+  slideTimer: 0
 --- !u!1 &547962242
 GameObject:
   m_ObjectHideFlags: 0
@@ -2641,7 +2666,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -961, y: 200}
+  m_AnchoredPosition: {x: -840, y: 200}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &547962244
@@ -2664,10 +2689,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: TIME =
+  m_text: 'TIME '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7a14833134ad3b5478987a7eb31b1e43, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: -2148209399572141205, guid: 7a14833134ad3b5478987a7eb31b1e43, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2691,8 +2716,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 45
+  m_fontSizeBase: 45
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -2730,7 +2755,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!222 &547962245
@@ -5134,7 +5159,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.36912602, g: 0.4043328, b: 0.745283, a: 0.9843137}
+  m_Color: {r: 0.16313633, g: 0.304533, b: 0.735849, a: 0.9843137}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -6677,7 +6702,7 @@ MonoBehaviour:
   raceStart: {fileID: 8300000, guid: 8cc399e28639a8d489b08c01b94bbc69, type: 3}
   raceGo: {fileID: 8300000, guid: 85695b1d439e78a4d8c8348e5af00333, type: 3}
   sixty: {fileID: 8300000, guid: 28e37d18d2f08a24999c9e0bd87704c1, type: 3}
-  shiftSound: {fileID: 0}
+  swoosh: {fileID: 8300000, guid: c4aeee79efbdd534eac04027dc8a1cd3, type: 3}
 --- !u!1 &1890777112
 GameObject:
   m_ObjectHideFlags: 0
@@ -6802,7 +6827,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -961, y: -10}
+  m_AnchoredPosition: {x: -840, y: -70}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1901801079
@@ -6825,7 +6850,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "LAUNCH DELAY = \n"
+  m_text: 'L-DELAY
+
+'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7a14833134ad3b5478987a7eb31b1e43, type: 2}
   m_sharedMaterial: {fileID: -2148209399572141205, guid: 7a14833134ad3b5478987a7eb31b1e43, type: 2}
@@ -6852,8 +6879,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 45
+  m_fontSizeBase: 45
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -6888,7 +6915,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: -118.19702, w: 0}
+  m_margin: {x: 0, y: 0, z: -180.36523, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -7500,7 +7527,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -961, y: 60}
+  m_AnchoredPosition: {x: -840, y: 20}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2118385829
@@ -7523,10 +7550,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: MAX RPM =
+  m_text: 'MAX RPM '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7a14833134ad3b5478987a7eb31b1e43, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: -2148209399572141205, guid: 7a14833134ad3b5478987a7eb31b1e43, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -7550,8 +7577,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 45
+  m_fontSizeBase: 45
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -7586,10 +7613,10 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 0, y: 0, z: -172.79004, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!222 &2118385830

@@ -18,6 +18,8 @@ public class zerotosixty : MonoBehaviour
     public TextMeshProUGUI startText;
     
     [Header("Display Text Objects")]
+    public List<DataMoveItem> dataItems = new List<DataMoveItem>();
+    
     public GameObject zerotosixText;
     
     public GameObject avgRPMtext;
@@ -59,7 +61,7 @@ public class zerotosixty : MonoBehaviour
     
     [SerializeField]
     
-    private Vector2 TextMovePos = new Vector2(-370f, 60f);
+    private Vector2 TextMovePos = new Vector2(-450f, 60f);
     
     [SerializeField]
     
@@ -88,10 +90,13 @@ public class zerotosixty : MonoBehaviour
     [SerializeField]
     
     private bool displayingDataRanOnce;
+
+    [SerializeField] private bool DataMoveRanOnce;
     
     [SerializeField]
     
     private bool sixtyhit = false;
+    
     
     [SerializeField]
     
@@ -102,10 +107,10 @@ public class zerotosixty : MonoBehaviour
     private bool started = false;
     
     public bool testbool = false;
+
     
-    [SerializeField]
     
-    private bool displaySlideBool = false;
+    [SerializeField] private bool displaySlideBool = false;
     
     public static bool is_data_colecting;
     
@@ -143,12 +148,17 @@ public class zerotosixty : MonoBehaviour
             newColor.a = lightcol.a;
             sr.color = newColor;
         }
+        foreach (DataMoveItem item in dataItems)
+        {
+            item.InitPosition();
+        }
 
         lastIndex = lights.Count;
         timer = 0.0f;
         displayrect = dataDisplay.GetComponent<RectTransform>();
         DataDisplayBeforePos = displayrect.anchoredPosition;
     }
+    
 
     void Update()
     {
@@ -197,9 +207,10 @@ public class zerotosixty : MonoBehaviour
 
         }
 
-        if (slideDone)
+        if (slideDone && !DataMoveRanOnce)
         {
             StartCoroutine(DataMove());
+            
         }
 
 
@@ -250,9 +261,17 @@ public class zerotosixty : MonoBehaviour
         displayingDataRanOnce = false;
         startButton.SetActive(true);
         dataDisplay.SetActive(false);
+        slideTimer = 0;
         AllColorChange(lights, Color.red);
         for (int i = 0; i < 3; i++)
             ColorOff(i);
+        foreach (DataMoveItem item in dataItems)
+        {
+          item.ResetPosition();
+        }
+        displayrect.anchoredPosition = DataDisplayBeforePos;
+
+        DataMoveRanOnce = false;
     }
 
     private void ColorOn(int indexnum)
@@ -356,15 +375,26 @@ public class zerotosixty : MonoBehaviour
 
     private IEnumerator DataMove()
     {
-        RectMoverX(zerotosixText, zerotosixText.GetComponent<RectTransform>(),TextMovePos, textmoveSpeed);
-        yield return new WaitForSeconds(0.2f);
-        RectMoverX(avgRPMtext, avgRPMtext.GetComponent<RectTransform>(),TextMovePos, textmoveSpeed);
-        yield return new WaitForSeconds(0.2f);
-        RectMoverX(maxRPMtext, maxRPMtext.GetComponent<RectTransform>(),TextMovePos, textmoveSpeed);
-        yield return new WaitForSeconds(0.2f);
-        RectMoverX(launchDelayText, launchDelayText.GetComponent<RectTransform>(),TextMovePos, textmoveSpeed);
-        
+        float swooshLength = SoundManager.Instance.swoosh.length;
+
+        foreach (var item in dataItems)
+        {
+            RectTransform rect = item.textObject.GetComponent<RectTransform>();
+            RectMoverX(item.textObject, rect, TextMovePos, textmoveSpeed);
+
+            if (!item.hasMoved)
+            {
+                SoundManager.Instance.PlaySound(SoundManager.Instance.swoosh);
+                item.hasMoved = true;
+            }
+
+            yield return new WaitForSeconds(swooshLength);
+        }
+
+        DataMoveRanOnce = true;
+
     }
+
 
     private IEnumerator DisplayTimer()
     {

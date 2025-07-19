@@ -8,7 +8,7 @@ public class SoundManager : MonoBehaviour
     public AudioClip raceStart;
     public AudioClip raceGo;
     public AudioClip sixty;
-    public AudioClip shiftSound;
+    public AudioClip swoosh;
 
     private void Awake()
     {
