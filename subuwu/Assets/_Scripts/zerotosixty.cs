@@ -105,7 +105,7 @@ public class zerotosixty : MonoBehaviour
     
     [SerializeField]
     
-    private bool sixtysound = false;
+    private bool sixtysound = false
     
     [SerializeField]
     
