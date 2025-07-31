@@ -102,10 +102,8 @@ public class zerotosixty : MonoBehaviour
     [Header("GameState bools")]
     
     public bool isTiming = false;
-    
-    [SerializeField]
-    
-    private bool sixtysound = false
+
+    [SerializeField] private bool sixtysound = false;
     
     [SerializeField]
     
