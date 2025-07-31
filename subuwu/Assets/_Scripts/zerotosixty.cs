@@ -131,6 +131,7 @@ public class zerotosixty : MonoBehaviour
     
     private bool LDelayTiming = false;
     private bool LDelayTimingRanOnce = false;
+    private bool ShowDataRanOnce = false;
 
     
     
@@ -287,6 +288,9 @@ public class zerotosixty : MonoBehaviour
     public void StopSequence()
         //stop sequence isnt used to stop data, but rather reset everything back to normal such as timer and lights.
     {
+
+
+
         StopCoroutine(lightRoutine);
         started = false;
         is_data_colecting = false;
@@ -304,20 +308,22 @@ public class zerotosixty : MonoBehaviour
         AllColorChange(lights, Color.red);
         for (int i = 0; i < 3; i++)
             ColorOff(i);
+
         foreach (DataMoveItem item in dataItems)
         {
           item.ResetPosition();
         }
-        displayrect.anchoredPosition = DataDisplayBeforePos;
         foreach (var item in dataTextobjects)
         {
             item.MakeInactive();
         }
+        displayrect.anchoredPosition = DataDisplayBeforePos;
 
         DataMoveRanOnce = false;
         CanShowData = false;
         LDelayTimingRanOnce = false;
-        
+        ShowDataRanOnce = false;
+
     }
 
     private void ColorOn(int indexnum)
@@ -464,12 +470,16 @@ public class zerotosixty : MonoBehaviour
 
     private IEnumerator ShowData()
     {
-        foreach (var item in dataTextobjects)
+        if (!ShowDataRanOnce)
         {
-            item.MakeActive();
-            yield return new WaitForSeconds(0.2f);
+            foreach (var item in dataTextobjects)
+            {
+                item.MakeActive();
+                yield return new WaitForSeconds(0.2f);
+            }
+            ShowDataRanOnce = true;
         }
-        
+
     }
 
 
