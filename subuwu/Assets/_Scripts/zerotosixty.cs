@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using System;
+using System.Runtime.Remoting.Messaging;
+using Unity.VisualScripting.Dependencies.NCalc;
 
 public class zerotosixty : MonoBehaviour
 {
@@ -17,8 +19,11 @@ public class zerotosixty : MonoBehaviour
     
     public TextMeshProUGUI startText;
     
+    
+    
     [Header("Display Text Objects")]
     public List<DataMoveItem> dataItems = new List<DataMoveItem>();
+    public List<TextEffect> dataTextobjects = new List<TextEffect>();
     
     public GameObject zerotosixText;
     
@@ -27,6 +32,15 @@ public class zerotosixty : MonoBehaviour
     public GameObject maxRPMtext;
     
     public GameObject launchDelayText;
+
+    public GameObject zerotosixData;
+    
+    public GameObject avgRPMData;
+    
+    public GameObject maxRPMData;
+    
+    public GameObject launchDelayData;
+    
     
     public GameObject dataDisplay;
     
@@ -66,10 +80,16 @@ public class zerotosixty : MonoBehaviour
     [SerializeField]
     
     private float textmoveSpeed = 20000;
-    
+    [SerializeField]
     private float timer;
-    
-    [Header("Stat Numbers")]
+
+    [SerializeField] private float LDelayTimer;
+
+    [Header("Stat Numbers")] 
+    private const int ZeroToSixtyInArray = 0;
+    private const int AvgRPMInArray = 1;
+    private const int MaxRPMInArray= 2;
+    private const int LDelayInArray = 3;
     
     [SerializeField]
     
@@ -82,10 +102,8 @@ public class zerotosixty : MonoBehaviour
     [Header("GameState bools")]
     
     public bool isTiming = false;
-    
-    [SerializeField]
-    
-    private bool sixtysound = false;
+
+    [SerializeField] private bool sixtysound = false;
     
     [SerializeField]
     
@@ -96,7 +114,8 @@ public class zerotosixty : MonoBehaviour
     [SerializeField]
     
     private bool sixtyhit = false;
-    
+
+    [SerializeField] private bool CanShowData = false;
     
     [SerializeField]
     
@@ -107,6 +126,10 @@ public class zerotosixty : MonoBehaviour
     private bool started = false;
     
     public bool testbool = false;
+    
+    private bool LDelayTiming = false;
+    private bool LDelayTimingRanOnce = false;
+    private bool ShowDataRanOnce = false;
 
     
     
@@ -152,9 +175,11 @@ public class zerotosixty : MonoBehaviour
         {
             item.InitPosition();
         }
+        
 
         lastIndex = lights.Count;
         timer = 0.0f;
+        LDelayTimer = 0.0f;
         displayrect = dataDisplay.GetComponent<RectTransform>();
         DataDisplayBeforePos = displayrect.anchoredPosition;
     }
@@ -168,7 +193,9 @@ public class zerotosixty : MonoBehaviour
         {
             started = true;
             timer = 0f;
+            LDelayTimer = 0.0f;
             timerText.text = "00.00";
+            dataTextobjects[LDelayInArray].dataText.text = "00.00";
             startText.text = "Stop";
             zerotosixtyRPMtotal = 0;
             zerotosixtyRPMcount = 1;
@@ -185,6 +212,12 @@ public class zerotosixty : MonoBehaviour
         {
             timer += Time.deltaTime;
             timerText.text = timer.ToString("00.00");
+        }
+
+        if (LDelayTiming)
+        {
+            LDelayTimer += Time.deltaTime;
+            dataTextobjects[LDelayInArray].dataText.text = LDelayTimer.ToString("00.00");
         }
 
         if (dataDisplay.activeInHierarchy)
@@ -211,6 +244,11 @@ public class zerotosixty : MonoBehaviour
         {
             StartCoroutine(DataMove());
             
+        }
+
+        if (CanShowData)
+        {
+            StartCoroutine(ShowData());
         }
 
 
@@ -248,6 +286,9 @@ public class zerotosixty : MonoBehaviour
     public void StopSequence()
         //stop sequence isnt used to stop data, but rather reset everything back to normal such as timer and lights.
     {
+
+
+
         StopCoroutine(lightRoutine);
         started = false;
         is_data_colecting = false;
@@ -265,13 +306,22 @@ public class zerotosixty : MonoBehaviour
         AllColorChange(lights, Color.red);
         for (int i = 0; i < 3; i++)
             ColorOff(i);
+
         foreach (DataMoveItem item in dataItems)
         {
           item.ResetPosition();
         }
+        foreach (var item in dataTextobjects)
+        {
+            item.MakeInactive();
+        }
         displayrect.anchoredPosition = DataDisplayBeforePos;
 
         DataMoveRanOnce = false;
+        CanShowData = false;
+        LDelayTimingRanOnce = false;
+        ShowDataRanOnce = false;
+
     }
 
     private void ColorOn(int indexnum)
@@ -311,18 +361,38 @@ public class zerotosixty : MonoBehaviour
     private void DataTimerCollect()
     {
         //add the time between go and takeoff
+        int maxRPM = 0;
         if (CarData.mph < 60 && !testbool && !sixtyhit)
         {
             isTiming = true;
             is_data_colecting = true;
             avgRPM = zerotosixtyRPMtotal / zerotosixtyRPMcount;
+            if (!LDelayTimingRanOnce)
+            {
+                LDelayTiming = true;
+                LDelayTimingRanOnce = true;
+            }
+            if (CarData.rpm > maxRPM)
+            {
+                maxRPM = CarData.rpm;
+            }
+
+            if (CarData.mph > 0)
+            {
+                LDelayTiming = false;
+            }
+            
         }
         else
         {
             AllColorChange(lights, Color.red);
             sixtyhit = true;
             is_data_colecting = false;
+            dataTextobjects[ZeroToSixtyInArray].dataText.text = timer.ToString("00.00");
+            dataTextobjects[AvgRPMInArray].dataText.text = avgRPM.ToString();
+            dataTextobjects[MaxRPMInArray].dataText.text = maxRPM.ToString();
             isTiming = false;
+            LDelayTiming = false;
             if (!sixtysound)
             {
                 SoundManager.Instance.PlaySound(SoundManager.Instance.sixty);
@@ -389,6 +459,21 @@ public class zerotosixty : MonoBehaviour
         }
 
         DataMoveRanOnce = true;
+        CanShowData = true;
+
+    }
+
+    private IEnumerator ShowData()
+    {
+        if (!ShowDataRanOnce)
+        {
+            foreach (var item in dataTextobjects)
+            {
+                item.MakeActive();
+                yield return new WaitForSeconds(0.2f);
+            }
+            ShowDataRanOnce = true;
+        }
 
     }
 

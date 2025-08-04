@@ -1,18 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
-
+[System.Serializable]
 public class TextEffect
 {
-    // Start is called before the first frame update
-    void Start()
+    public GameObject textEffectObject;
+    public TextMeshProUGUI dataText;
+    public void MakeActive()
     {
-        
+        textEffectObject.SetActive(true);
     }
 
-    // Update is called once per frame
-    void Update()
+    public void MakeInactive()
     {
-        
+        textEffectObject.SetActive(false);
     }
+
 }
