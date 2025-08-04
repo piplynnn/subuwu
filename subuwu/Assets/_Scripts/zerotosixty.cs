@@ -341,13 +341,10 @@ public class zerotosixty : MonoBehaviour
 
     private void DisplayData()
     {
-        if (!displayingDataRanOnce)
-        {
-            startButton.SetActive(false);
-            dataDisplay.SetActive(true);
-            displayingDataRanOnce = true;
-        }
-        
+       
+        startButton.SetActive(false);
+        dataDisplay.SetActive(true);
+        displayingDataRanOnce = true;
         if (!displaySlideBool)
         {
             isSliding = true;
