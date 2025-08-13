@@ -14,7 +14,7 @@ public class DataButton : MonoBehaviour
         startPressed.startpressed = false;
         stop = true;
         
-        
-
     }
+
+
 }

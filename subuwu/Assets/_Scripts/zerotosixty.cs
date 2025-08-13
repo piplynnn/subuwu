@@ -25,6 +25,8 @@ public class zerotosixty : MonoBehaviour
     public List<DataMoveItem> dataItems = new List<DataMoveItem>();
     public List<TextEffect> dataTextobjects = new List<TextEffect>();
     
+    public List<TextEffect> bestDataObjects = new List<TextEffect>();
+    
     public GameObject zerotosixText;
     
     public GameObject avgRPMtext;
@@ -41,10 +43,11 @@ public class zerotosixty : MonoBehaviour
     
     public GameObject launchDelayData;
     
-    
     public GameObject dataDisplay;
     
     public GameObject startButton;
+
+    public GameObject CloseDisplay;
     
     private RectTransform displayrect;
     
@@ -129,6 +132,7 @@ public class zerotosixty : MonoBehaviour
     
     private bool LDelayTiming = false;
     private bool LDelayTimingRanOnce = false;
+    [SerializeField]
     private bool ShowDataRanOnce = false;
 
     
@@ -160,6 +164,9 @@ public class zerotosixty : MonoBehaviour
     private float slideTimer = 0f;
     
     private Coroutine lightRoutine;
+    private Coroutine dataMoveRoutine;
+    private Coroutine showDataRoutine;
+
 
     void Start()
     {
@@ -242,13 +249,15 @@ public class zerotosixty : MonoBehaviour
 
         if (slideDone && !DataMoveRanOnce)
         {
-            StartCoroutine(DataMove());
+            dataMoveRoutine = StartCoroutine(DataMove());
+            
             
         }
 
-        if (CanShowData)
+        if (CanShowData && !ShowDataRanOnce)
         {
-            StartCoroutine(ShowData());
+            showDataRoutine = StartCoroutine(ShowData());
+            ShowDataRanOnce = true;
         }
 
 
@@ -286,15 +295,32 @@ public class zerotosixty : MonoBehaviour
     public void StopSequence()
         //stop sequence isnt used to stop data, but rather reset everything back to normal such as timer and lights.
     {
+        if (lightRoutine != null)
+        {
+            StopCoroutine(lightRoutine);
+            lightRoutine = null;
+        }
 
+        if (dataMoveRoutine != null)
+        {
+            StopCoroutine(dataMoveRoutine);
+            dataMoveRoutine = null;
+        }
 
+        if (showDataRoutine != null)
+        {
+            StopCoroutine(showDataRoutine);
+            showDataRoutine = null;
+        }
 
-        StopCoroutine(lightRoutine);
+        ShowDataRanOnce = false;
+        CloseDisplay.SetActive(false);
         started = false;
         is_data_colecting = false;
         displaySlideBool = false;
         sixtyhit = false;
         isTiming = false;
+        LDelayTiming = false;
         isSliding = false;
         slideDone = false;
         sixtysound = false;
@@ -315,12 +341,17 @@ public class zerotosixty : MonoBehaviour
         {
             item.MakeInactive();
         }
+
+        foreach (var item in bestDataObjects)
+        {
+            item.MakeInactive();
+        }
         displayrect.anchoredPosition = DataDisplayBeforePos;
 
         DataMoveRanOnce = false;
         CanShowData = false;
         LDelayTimingRanOnce = false;
-        ShowDataRanOnce = false;
+        
 
     }
 
@@ -361,7 +392,7 @@ public class zerotosixty : MonoBehaviour
     private void DataTimerCollect()
     {
         //add the time between go and takeoff
-        int maxRPM = 0;
+        
         if (CarData.mph < 60 && !testbool && !sixtyhit)
         {
             isTiming = true;
@@ -391,8 +422,11 @@ public class zerotosixty : MonoBehaviour
             dataTextobjects[ZeroToSixtyInArray].dataText.text = timer.ToString("00.00");
             dataTextobjects[AvgRPMInArray].dataText.text = avgRPM.ToString();
             dataTextobjects[MaxRPMInArray].dataText.text = maxRPM.ToString();
+            dataTextobjects[LDelayInArray].dataText.text = LDelayTimer.ToString("00.00");
+            SaveBestTime();
             isTiming = false;
             LDelayTiming = false;
+            startButton.SetActive(false);
             if (!sixtysound)
             {
                 SoundManager.Instance.PlaySound(SoundManager.Instance.sixty);
@@ -412,7 +446,7 @@ public class zerotosixty : MonoBehaviour
     private void DisplayData()
     {
        
-        startButton.SetActive(false);
+        
         dataDisplay.SetActive(true);
         displayingDataRanOnce = true;
         if (!displaySlideBool)
@@ -443,11 +477,19 @@ public class zerotosixty : MonoBehaviour
     private IEnumerator DataMove()
     {
         float swooshLength = SoundManager.Instance.swoosh.length;
+        Vector2 bestPos = new Vector2(100f, 60f);
 
         foreach (var item in dataItems)
         {
             RectTransform rect = item.textObject.GetComponent<RectTransform>();
-            RectMoverX(item.textObject, rect, TextMovePos, textmoveSpeed);
+            if (item == dataItems[4])
+            {
+                RectMoverX(item.textObject, rect,bestPos, textmoveSpeed);
+            }
+            else
+            {
+                RectMoverX(item.textObject, rect, TextMovePos, textmoveSpeed);
+            }
 
             if (!item.hasMoved)
             {
@@ -465,16 +507,75 @@ public class zerotosixty : MonoBehaviour
 
     private IEnumerator ShowData()
     {
-        if (!ShowDataRanOnce)
+
         {
+            yield return new WaitForSeconds(0.2f);
             foreach (var item in dataTextobjects)
             {
                 item.MakeActive();
                 yield return new WaitForSeconds(0.2f);
             }
-            ShowDataRanOnce = true;
+
+            foreach (var item in bestDataObjects)
+            {
+                item.MakeActive();
+                yield return new WaitForSeconds(0.2f);
+            }
+            CloseDisplay.SetActive(true);
+            
         }
 
+    }
+
+    public void SaveBestTime()
+    {
+        float currentBestTime = PlayerPrefs.GetFloat("BestTime");
+        if (timer < currentBestTime || currentBestTime == 0)
+        {
+            PlayerPrefs.SetFloat("BestTime", timer);
+            bestDataObjects[ZeroToSixtyInArray].dataText.text = timer.ToString("00.00");
+        }
+        else
+        {
+            bestDataObjects[ZeroToSixtyInArray].dataText.text = currentBestTime.ToString("00.00");
+        }
+
+
+
+        float currentBestAVG = PlayerPrefs.GetFloat("AvgRPM");
+        if (avgRPM > currentBestAVG)
+        {
+            PlayerPrefs.SetFloat("AvgRPM", avgRPM);
+            bestDataObjects[AvgRPMInArray].dataText.text = avgRPM.ToString();
+        }
+        else
+        {
+            bestDataObjects[AvgRPMInArray].dataText.text = currentBestAVG.ToString();
+            
+        }
+        
+        float currentBestMax = PlayerPrefs.GetFloat("MaxRPM");
+        if (maxRPM > currentBestMax)
+        {
+            PlayerPrefs.SetFloat("MaxRPM", maxRPM);
+            bestDataObjects[MaxRPMInArray].dataText.text = maxRPM.ToString();
+        }
+        else
+        {
+            bestDataObjects[MaxRPMInArray].dataText.text = currentBestMax.ToString();
+        }
+        float currentBestLDelay = PlayerPrefs.GetFloat("LDelay");
+        if (LDelayTimer < currentBestLDelay || currentBestLDelay == 0)
+        {
+           PlayerPrefs.SetFloat("LDelay", LDelayTimer);
+           bestDataObjects[LDelayInArray].dataText.text = LDelayTimer.ToString("00.00");
+        }
+        else
+        {
+            bestDataObjects[LDelayInArray].dataText.text = currentBestLDelay.ToString("00.00");
+        }
+        PlayerPrefs.Save();
+        
     }
 
 
