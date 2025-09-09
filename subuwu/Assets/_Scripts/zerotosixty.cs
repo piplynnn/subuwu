@@ -96,7 +96,7 @@ public class zerotosixty : MonoBehaviour
     
     [SerializeField]
     
-    private float avgRPM;
+    private int avgRPM;
     
     [SerializeField]
     
@@ -141,9 +141,9 @@ public class zerotosixty : MonoBehaviour
     
     public static bool is_data_colecting;
     
-    public static float zerotosixtyRPMtotal;
+    public static int zerotosixtyRPMtotal;
     
-    public static float zerotosixtyRPMcount;
+    public static int zerotosixtyRPMcount;
     
     [Header("Slide Settings")]
     

@@ -10,11 +10,20 @@ public class LightColor : MonoBehaviour
     public bool yellow1 = false;
     public bool yellow2 = false;
     public bool red = false;
+    public bool allred = false;
     private int lastIndex = 0;
+    public List<Color> colors = new List<Color>();
+    private Color fullred;
+    private Color lightred;
     private Color fullcol;
     private Color lightcol;
+    
+    private Coroutine flashingRoutine;
     void Start()
     {
+        lights.Clear();
+        colors.Clear();
+
         foreach (Transform child in transform)
         { 
             SpriteRenderer sr = child.GetComponent<SpriteRenderer>();
@@ -28,98 +37,78 @@ public class LightColor : MonoBehaviour
 
         }
         
+        lightred = new Color(1f, 0.5f, 0.5f, 1f);
+        
+        fullred = Color.red;
+        for (int i = 0; i < 4; i++)
+        {
+            colors.Add(lights[i].color);
+            
+        }
+
+
+
     }
 
     
     void Update()
     {
+     
+        int rpm = CarData.rpm;
+
+        green   = rpm > 4250;
+        yellow1 = rpm > 4750;
+        yellow2 = rpm > 5250;
+        red     = rpm > 5750;
+        allred   = rpm > 6000;
+        
+
         ColorHandling();
-        if (CarData.rpm > 4250)
-        {
-            green = true;
-        }
-        else
-        {
-            green = false;
-        }
-        if (CarData.rpm > 4750)
-        {
-            yellow1 = true;
-           
-        }
-        else
-        {
-            yellow1 = false;
-        }
-        if (CarData.rpm > 5250)
-        {
-            yellow2 = true;
-           
-        }
-        else
-        {
-            yellow2 = false;
-        }
-        if (CarData.rpm > 6000)
-        {
-            red = true;
-           
-        }
-        else
-        {
-            red = false;
-        }
         
     }
 
+
+    
+
     private void ColorHandling()
     {
-        if (green)
+        if (!allred)
         {
-            ColorOn(0);
+            if (flashingRoutine != null)
+            {
+                StopCoroutine(flashingRoutine);
+                flashingRoutine = null;
+                for (int i = 0; i < 4; i++)
+                {
+                    NewColor(i, colors[i]);
 
-        }
-        else
-        {
-            ColorOff(0);
-           
-            
-        }
-        if (yellow1)
-        {
-            ColorOn(1);
+                }
+            }
 
+            bool[] flags = { green, yellow1, yellow2, red };
+            for (int i = 0; i < flags.Length; i++)
+            {
+                if (flags[i]) ColorOn(i);
+                else          ColorOff(i);
+            }
         }
         else
         {
-            ColorOff(1);
-           
-            
+            if (flashingRoutine == null) // only start once
+                flashingRoutine = StartCoroutine(ColorSwitch());
         }
-        if (yellow2)
-        {
-            ColorOn(2);
-       
-        }
-        else
-        {
-            ColorOff(2);
-        }
-        if (red)
-        {
-            ColorOn(3);
-        }
-        else
-        {
-            ColorOff(3); 
-        }
-        
     }
 
     private void ColorOn(int indexnum)
     {
         Color newColor = lights[indexnum].color; 
         newColor.a = fullcol.a;
+        lights[indexnum].color = newColor;
+        lights[lastIndex-indexnum-1].color = newColor;
+    }
+    private void NewColor(int indexnum, Color color)
+    {
+        Color newColor = color;
         lights[indexnum].color = newColor;
         lights[lastIndex-indexnum-1].color = newColor;
     }
@@ -131,6 +120,30 @@ public class LightColor : MonoBehaviour
         lights[indexnum].color = newColor;
         lights[lastIndex-indexnum -1].color = newColor;
     }
+    private void AllColorChange(List<SpriteRenderer> _lights, Color color)
+    {
+        foreach (SpriteRenderer _light in _lights)
+        {
+            SpriteRenderer sr = _light.GetComponent<SpriteRenderer>();
+            sr.color = color;
+        }
+
+        lastIndex = lights.Count;
+        
+    }
+
+    private IEnumerator ColorSwitch()
+    {
+        while (allred) 
+        {
+            AllColorChange(lights, fullred);
+            yield return new WaitForSeconds(0.1f);
+
+            AllColorChange(lights, lightred);
+            yield return new WaitForSeconds(0.1f);
+        }
+    }
+
     
     
 }
